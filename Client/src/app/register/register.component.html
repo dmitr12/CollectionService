@@ -1,0 +1,50 @@
+<div class="row mt-5 mr-3 ml-3" style="min-width:300px">
+  <div class="col-sm-3 col-md-4"></div>
+  <form class="card col-sm-6 col-md-4" [formGroup]="formRegister" (ngSubmit)="onSubmit()">
+    <div class="card-content">
+      <span class="card-title center-align">Регистрация пользователя</span>
+      <div class="input-field">
+        <input id="email" required type="email" formControlName="email" [ngClass]="{invalid: formRegister?.get('email')?.invalid && formRegister?.get('email')?.dirty}">
+        <label for="email">Email:</label>
+        <span class="helper-text red-text" *ngIf="formRegister?.get('email')?.invalid && formRegister?.get('email')?.dirty">
+          <span *ngIf="formRegister?.get('email')?.errors?.required">Заполните поле</span>
+          <span *ngIf="formRegister?.get('email')?.errors?.email">Некорректный Email</span>
+        </span>
+      </div>
+      <div class="input-field">
+        <input id="login" required type="text" formControlName="userName" [ngClass]="{invalid: formRegister?.get('userName')?.invalid && formRegister?.get('userName')?.dirty}">
+        <label for="login">Логин:</label>
+        <span class="helper-text red-text" *ngIf="formRegister?.get('userName')?.invalid && formRegister?.get('userName')?.dirty">
+          <span *ngIf="formRegister?.get('userName')?.errors?.required">Заполните поле Логин</span>
+          <span *ngIf="formRegister?.get('userName')?.errors?.maxlength && formRegister?.get('userName')?.errors?.maxlength?.requiredLength">Максимум {{formRegister?.get('userName')?.errors?.maxlength?.requiredLength}} символов</span>
+        </span>
+      </div>
+      <div formGroupName="passwords">
+        <div class="input-field">
+          <input id="password" [(ngModel)]="psw" required type="password" formControlName="password" [ngClass]="{invalid: formRegister?.get('passwords.password')?.invalid && formRegister?.get('passwords.password')?.dirty}">
+          <label for="password">Пароль:</label>
+          <span class="helper-text red-text" *ngIf="formRegister?.get('passwords.password')?.invalid && formRegister?.get('passwords.password')?.dirty">
+            <span *ngIf="formRegister?.get('passwords.password')?.errors?.required">Заполните поле</span>
+            <span *ngIf="formRegister?.get('passwords.password')?.errors?.minlength && formRegister?.get('passwords.password')?.errors?.minlength?.requiredLength">Минимум {{formRegister?.get('passwords.password')?.errors?.minlength?.requiredLength}} символов</span>
+            <span *ngIf="formRegister?.get('passwords.password')?.errors?.maxlength && formRegister?.get('passwords.password')?.errors?.maxlength?.requiredLength">Максимум {{formRegister?.get('passwords.password')?.errors?.maxlength?.requiredLength}} символов</span>
+          </span>
+        </div>
+        <div class="input-field">
+          <input id="confirmpassword" [(ngModel)]="confirmPsw" required type="password" formControlName="confirmPassword" [ngClass]="{invalid: formRegister?.get('passwords.confirmPassword')?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty}">
+          <label for="confirmpassword">Подтверждение пароля:</label>
+          <span class="helper-text red-text" *ngIf="formRegister?.get('passwords.confirmPassword')?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty">
+            <span *ngIf="formRegister?.get('passwords.confirmPassword')?.errors?.required">Заполните поле</span>
+            <span *ngIf="formRegister?.get('passwords.confirmPassword')?.errors?.minlength && formRegister?.get('passwords.confirmPassword')?.errors?.minlength?.requiredLength">Минимум {{formRegister?.get('passwords.confirmPassword')?.errors?.minlength?.requiredLength}} символов</span>
+            <span *ngIf="formRegister?.get('passwords.confirmPassword')?.errors?.maxlength && formRegister?.get('passwords.confirmPassword')?.errors?.maxlength?.requiredLength">Максимум {{formRegister?.get('passwords.confirmPassword')?.errors?.maxlength?.requiredLength}} символов</span><br/>
+          </span>
+        </div>
+      </div>
+      <span class="helper-text red-text" *ngIf="formRegister?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty">
+        <span *ngIf="formRegister?.errors?.custom">{{formRegister?.errors?.custom}}</span>
+      </span>
+    </div>
+    <div class="card-action center-align">
+      <button type="submit" class="btn waves-effect waves-light" style="background-color: #11d62b" [disabled]="formRegister?.invalid">Регистрация</button>
+    </div>
+  </form>
+</div>
