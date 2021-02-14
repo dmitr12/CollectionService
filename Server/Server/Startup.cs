@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,8 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Server.DI;
 using Server.Interfaces;
+using Server.Utils;
 
 namespace Server
 {
@@ -30,7 +33,23 @@ namespace Server
         {
             services.AddControllers();
             services.AddScoped<IDbHelper, SQLiteDBHelper>();
+            services.AddScoped<IGeneratorToken, GeneratorToken>();
+            services.Configure<AuthenticateOptions>(Configuration.GetSection("AuthenticateParameters"));
 
+            var authoptions = Configuration.GetSection("AuthenticateParameters").Get<AuthenticateOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = authoptions.GetSymmetricSecurityKey(),
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true
+                };
+            });
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(b =>
@@ -53,6 +72,8 @@ namespace Server
             app.UseRouting();
 
             app.UseCors();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

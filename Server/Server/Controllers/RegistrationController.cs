@@ -17,12 +17,10 @@ namespace Server.Controllers
     [ApiController]
     public class RegistrationController : ControllerBase
     {
-        private readonly IConfiguration config;
         private readonly IDbHelper dbHelper;
 
-        public RegistrationController(IConfiguration config, IDbHelper dbHelper)
+        public RegistrationController(IDbHelper dbHelper)
         {
-            this.config = config;
             this.dbHelper = dbHelper;
         }
 
@@ -37,7 +35,7 @@ namespace Server.Controllers
                         "UserName", "Email"}))
                         return Ok(new { msg = "Пользователь с таким Login или Email уже есть" });
                     await dbHelper.ExecuteQuery($"insert into users(username, email, password, roleid) values(@UserName, @Email, @Password, @RoleId)",
-                        new User {UserName = model.UserName, Email = model.Email, Password = HashClass.GetHash(model.Password), RoleId = 2 },
+                        new User {UserName = model.UserName, Email = model.Email, Password = HashClass.GetHash(model.Password), RoleId = 1 },
                         new List<string> { "UserName", "Email", "Password", "RoleId" });
                     return Ok();
                 }

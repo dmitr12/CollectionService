@@ -16,12 +16,13 @@
         <label for="login">Логин:</label>
         <span class="helper-text red-text" *ngIf="formRegister?.get('userName')?.invalid && formRegister?.get('userName')?.dirty">
           <span *ngIf="formRegister?.get('userName')?.errors?.required">Заполните поле Логин</span>
-          <span *ngIf="formRegister?.get('userName')?.errors?.maxlength && formRegister?.get('userName')?.errors?.maxlength?.requiredLength">Максимум {{formRegister?.get('userName')?.errors?.maxlength?.requiredLength}} символов</span>
+          <span *ngIf="formRegister?.get('userName')?.errors?.maxlength && formRegister?.get('userName')?.errors?.maxlength?.requiredLength">Максимум {{formRegister?.get('userName')?.errors?.maxlength?.requiredLength}} символов</span><br>
+          <span *ngIf="formRegister?.get('userName')?.errors?.custom">{{formRegister?.get('userName')?.errors?.custom}}</span>
         </span>
       </div>
       <div formGroupName="passwords">
         <div class="input-field">
-          <input id="password" [(ngModel)]="psw" required type="password" formControlName="password" [ngClass]="{invalid: formRegister?.get('passwords.password')?.invalid && formRegister?.get('passwords.password')?.dirty}">
+          <input id="password" required type="password" formControlName="password" [ngClass]="{invalid: formRegister?.get('passwords.password')?.invalid && formRegister?.get('passwords.password')?.dirty}">
           <label for="password">Пароль:</label>
           <span class="helper-text red-text" *ngIf="formRegister?.get('passwords.password')?.invalid && formRegister?.get('passwords.password')?.dirty">
             <span *ngIf="formRegister?.get('passwords.password')?.errors?.required">Заполните поле</span>
@@ -30,7 +31,7 @@
           </span>
         </div>
         <div class="input-field">
-          <input id="confirmpassword" [(ngModel)]="confirmPsw" required type="password" formControlName="confirmPassword" [ngClass]="{invalid: formRegister?.get('passwords.confirmPassword')?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty}">
+          <input id="confirmpassword" required type="password" formControlName="confirmPassword" [ngClass]="{invalid: formRegister?.get('passwords.confirmPassword')?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty}">
           <label for="confirmpassword">Подтверждение пароля:</label>
           <span class="helper-text red-text" *ngIf="formRegister?.get('passwords.confirmPassword')?.invalid && formRegister?.get('passwords.confirmPassword')?.dirty">
             <span *ngIf="formRegister?.get('passwords.confirmPassword')?.errors?.required">Заполните поле</span>

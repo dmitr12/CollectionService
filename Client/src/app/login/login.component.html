@@ -1,3 +1,25 @@
-<div class="row">
-  login component
+<div class="row mt-5 mr-3 ml-3" style="min-width:300px">
+  <div class="col-sm-3 col-md-4"></div>
+  <form class="card col-sm-6 col-md-4" [formGroup]="formLogin" (ngSubmit)="login()">
+    <div class="card-content">
+      <span class="card-title center-align">Вход в приложение</span>
+      <div class="input-field">
+        <input id="login" required type="email" formControlName="login" [ngClass]="{invalid: formLogin?.get('login')?.invalid && formLogin?.get('login')?.dirty}">
+        <label for="login">Логин/Почта:</label>
+        <span class="helper-text red-text" *ngIf="formLogin?.get('login')?.invalid && formLogin?.get('login')?.dirty">
+          <span *ngIf="formLogin?.get('login')?.errors?.required">Заполните поле</span>
+        </span>
+      </div>
+      <div class="input-field">
+        <input id="password" required type="password" formControlName="password" [ngClass]="{invalid: formLogin?.get('password')?.invalid && formLogin?.get('password')?.dirty}">
+        <label for="password">Пароль:</label>
+        <span class="helper-text red-text" *ngIf="formLogin?.get('password')?.invalid && formLogin?.get('password')?.dirty">
+          <span *ngIf="formLogin?.get('password')?.errors?.required">Заполните поле</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-action center-align">
+      <button type="submit" class="btn waves-effect waves-light" style="background-color: #11d62b;" [disabled]="formLogin?.invalid">Войти</button>
+    </div>
+  </form>
 </div>

@@ -10,12 +10,9 @@ import { RegisterService } from '../services/register.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-  psw = '';
-  confirmPsw = '';
-
+  
   formRegister: FormGroup = new FormGroup({
-    userName: new FormControl(null, [Validators.required, Validators.maxLength(100)]),
+    userName: new FormControl(null, [Validators.required, Validators.maxLength(100), this.validName]),
     email: new FormControl(null, [Validators.required, Validators.email]),
     passwords: new FormGroup({
       password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(50)]),
@@ -34,6 +31,13 @@ export class RegisterComponent implements OnInit {
     return null;
   }
 
+  validName(c: FormControl): ValidationErrors | null{
+    if (c?.value?.toString().includes('@')) {
+      return { custom: 'Недопустимый символ @' };
+    }
+    return null;
+  }
+
   ngOnInit(): void {
 
   }
@@ -41,7 +45,7 @@ export class RegisterComponent implements OnInit {
   onSubmit(){
     this.registerService.register(new UserRegistration(this.formRegister.value.userName, this.formRegister.value.email,
       this.formRegister.value.passwords.password)).subscribe((res:any)=>{
-        if (res && res['msg']){
+        if (res){
           alert(res['msg'])
         }
         else{
