@@ -8,6 +8,6 @@ namespace Server.Interfaces
 {
     public interface IGeneratorToken
     {
-        Task<string> GenerateToken(User user);
+        string GenerateToken(User user);
     }
 }

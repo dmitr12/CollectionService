@@ -35,17 +35,26 @@ namespace Server.DI
 
         public async Task<List<T>> GetData<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class
         {
-            if (typeof(T) == typeof(User))
+            List<T> list = new List<T>();
+            Type type = typeof(T);
+            await con.OpenAsync();
+            using (SqliteCommand command = AddParameters(queryString, objForParameters, parameterNames, con))
             {
-                List<User> users = await GetUsers(queryString, objForParameters as User, parameterNames);
-                return users as List<T>;
+                SqliteDataReader reader = command.ExecuteReaderAsync().Result;
+                while (await reader.ReadAsync())
+                {
+                    T instance = Activator.CreateInstance<T>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        if (reader.GetValue(i).GetType() == typeof(Int64))
+                            type.GetProperty(reader.GetName(i)).SetValue(instance, Convert.ToInt32(reader.GetValue(i)));
+                        else
+                            type.GetProperty(reader.GetName(i)).SetValue(instance, reader.GetValue(i));
+                    }
+                    list.Add(instance);
+                }
             }
-            if(typeof(T) == typeof(Role))
-            {
-                List<Role> roles = await GetRoles(queryString, objForParameters as Role, parameterNames);
-                return roles as List<T>;
-            }
-            return null;
+            return list;
         }
 
         public async Task<bool> HasRows<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class
@@ -58,47 +67,6 @@ namespace Server.DI
                     return true;
                 return false;
             }
-        }
-
-        private async Task<List<User>> GetUsers(string queryString, User user, List<string> parameterNames)
-        {
-            List<User> users = new List<User>();
-            await con.OpenAsync();
-            using (SqliteCommand command = AddParameters(queryString, user, parameterNames, con))
-            {
-                SqliteDataReader reader = command.ExecuteReaderAsync().Result;
-                while (await reader.ReadAsync())
-                {
-                    users.Add(new User
-                    {
-                        UserId = reader.GetInt32(0),
-                        UserName = reader.GetString(1),
-                        Email = reader.GetString(2),
-                        Password = reader.GetString(3),
-                        RoleId = reader.GetInt32(4)
-                    });
-                }
-            }
-            return users;
-        }
-
-        private async Task<List<Role>> GetRoles(string queryString, Role user, List<string> parameterNames)
-        {
-            List<Role> roles = new List<Role>();
-            await con.OpenAsync();
-            using (SqliteCommand command = AddParameters(queryString, user, parameterNames, con))
-            {
-                SqliteDataReader reader = command.ExecuteReaderAsync().Result;
-                while (await reader.ReadAsync())
-                {
-                    roles.Add(new Role
-                    {
-                        RoleId = reader.GetInt32(0),
-                        RoleName = reader.GetString(1),
-                    });
-                }
-            }
-            return roles;
         }
 
         private SqliteCommand AddParameters<T>(string queryString, T obj, List<string> parameterNames, SqliteConnection connection)

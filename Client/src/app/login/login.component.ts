@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserAuthentication } from '../models/userAuthentication';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -13,14 +16,20 @@ export class LoginComponent implements OnInit {
     password: new FormControl(null, [Validators.required])
   });
 
-  constructor() { }
+  constructor(private authenticationService: AuthenticationService, private router: Router) { }
 
   ngOnInit(): void {
-  
-  }
-
-  login(){
     
   }
 
+  login() {
+    this.authenticationService.login(new UserAuthentication(this.formLogin.value.login, this.formLogin.value.password)).subscribe(res => {
+      this.router.navigate(['']);
+    }, error => {
+        if (error.status == 401)
+          alert("Неверный логин или пароль");
+        else
+          alert("Возникла ошибка, статусный код "+error.status)
+    });
+  }
 }

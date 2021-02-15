@@ -11,3 +11,25 @@
   box-shadow: 0 1px 0 0 #11d62b !important
 }
 
+.table-container{
+  padding: 2%;
+}
+
+.btn-item{
+  font-size: 38px;
+  margin: 0px 10px;
+  transition: all .3s;
+  cursor: default;
+}
+
+.btn-item:hover{
+  color: #11d62b;
+}
+
+.btn-bucket:hover{
+  color: #fa053e;
+}
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

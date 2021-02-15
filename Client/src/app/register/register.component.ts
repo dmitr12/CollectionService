@@ -42,10 +42,10 @@ export class RegisterComponent implements OnInit {
 
   }
 
-  onSubmit(){
+  register(){
     this.registerService.register(new UserRegistration(this.formRegister.value.userName, this.formRegister.value.email,
       this.formRegister.value.passwords.password)).subscribe((res:any)=>{
-        if (res){
+        if (res && res['msg']){
           alert(res['msg'])
         }
         else{

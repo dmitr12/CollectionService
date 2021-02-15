@@ -1,0 +1,26 @@
+<div>
+  <span class="material-icons btn-item" (click)="testOpenDialog()">add_circle_outline</span>
+</div>
+<div class="table-container">
+    <table class="centered">
+        <thead>
+          <tr>
+              <th data-field="id">Название</th>
+              <th data-field="name">Описание</th>
+              <th data-field="price">Последнее выполнение</th>
+              <th data-field="action"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks">
+              <td>{{task.name}}</td>
+              <td>{{task.description}}</td>
+              <td>{{task.last}}</td>
+              <td>
+                <span class="material-icons btn-item">edit</span>
+                <span class="material-icons btn-item btn-bucket">delete</span>
+              </td>
+          </tr>
+        </tbody>
+      </table>
+</div>

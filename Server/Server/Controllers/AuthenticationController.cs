@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Server.Interfaces;
 using Server.Models.View_Models;
 using Microsoft.AspNetCore.Authorization;
+using Server.Utils;
+using Server.Managers;
 
 namespace Server.Controllers
 {
@@ -15,41 +17,30 @@ namespace Server.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IDbHelper dbHelper;
-        private readonly IGeneratorToken generatorToken;
+        private readonly UserManager userManager;
 
-        public AuthenticationController(IDbHelper dbHelper, IGeneratorToken generatorToken)
+        public AuthenticationController(UserManager userManager)
         {
-            this.dbHelper = dbHelper;
-            this.generatorToken = generatorToken;
+            this.userManager = userManager;
+        }
+
+
+        [HttpGet]
+        public IActionResult TestApi()
+        {
+            return Ok(new { msg = "hello", number = 1 });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(UserAuthenticationModel model)
+        public IActionResult Login(UserAuthenticationModel model)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    List<User> users = await dbHelper.GetData("select * from users where (username = @UserName or email = @UserName) and password = @Password",
-                        new User { UserName = model.Login, Password=model.Password }, new List<string> { "UserName", "Password" });
-                    if(users.Count == 1)
-                    {
-                        var token = await generatorToken.GenerateToken(users[0]);
-                        return Ok(new { token = token });
-                    }
-                    return Unauthorized();
-                }
-                catch
-                {
-                    return StatusCode(500);
-                }
-                finally
-                {
-                    await dbHelper.Close();
-                }
+                string token = userManager.GetToken(model);
+                if(token!=null)
+                    return Ok(new { token = token });
             }
-            return BadRequest();
+            return Unauthorized();
         }
     }
 }
