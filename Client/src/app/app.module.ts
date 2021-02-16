@@ -15,6 +15,7 @@ import { TasksComponent } from './tasks/tasks/tasks.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AddTaskComponent } from './tasks/add-task/add-task.component';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { AddTaskComponent } from './tasks/add-task/add-task.component';
     ReactiveFormsModule,
     NgbModule,
     MatDialogModule,
+    MatSelectModule,
     HttpClientModule,
     JwtModule.forRoot({
       config:{

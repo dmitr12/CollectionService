@@ -16,7 +16,7 @@
 }
 
 .btn-item{
-  font-size: 38px;
+  font-size: 28px;
   margin: 0px 10px;
   transition: all .3s;
   cursor: default;
@@ -29,7 +29,6 @@
 .btn-bucket:hover{
   color: #fa053e;
 }
-
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

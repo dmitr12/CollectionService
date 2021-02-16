@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Server.Models.DB_Models
+namespace Server.Models.View_Models
 {
-    public class Job
+    public class TaskModel
     {
-        public int TaskId { get; set; }
+        [Required]
         public string Name { get; set; }
+
+        [Required]
         public string Description { get; set; }
-        public string StartTask { get; set; }
+
+        [Required]
         public int PeriodicityMin { get; set; }
-        public string LastExecution { get; set; }
+
+        [Required]
         public string FilterText { get; set; }
-        public int UserId { get; set; }
+
+        [Required]
         public int ApiId { get; set; }
     }
 }

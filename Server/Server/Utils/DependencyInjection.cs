@@ -16,6 +16,8 @@ namespace Server.Utils
             services.AddScoped<IDbHelper, SQLiteDBHelper>();
             services.AddScoped<IGeneratorToken, GeneratorToken>();
             services.AddScoped<UserManager>();
+            services.AddScoped<TaskManager>();
+            services.AddScoped<IMailSender, MailSender>();
         }
     }
 }

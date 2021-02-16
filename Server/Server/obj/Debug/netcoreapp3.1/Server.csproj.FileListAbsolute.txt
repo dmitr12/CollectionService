@@ -82,5 +82,11 @@ C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\Mic
 C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.dll
 C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\RestSharp.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\Quartz.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\System.Configuration.ConfigurationManager.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\System.Security.Cryptography.ProtectedData.dll
+C:\CollectionService\CollectionService\Server\Server\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\CollectionService\CollectionService\Server\Server\obj\Debug\netcoreapp3.1\Server.csproj.CoreCompileInputs.cache
 C:\CollectionService\CollectionService\Server\Server\obj\Debug\netcoreapp3.1\Server.MvcApplicationPartsAssemblyInfo.cache

@@ -24,13 +24,6 @@ namespace Server.Controllers
             this.userManager = userManager;
         }
 
-
-        [HttpGet]
-        public IActionResult TestApi()
-        {
-            return Ok(new { msg = "hello", number = 1 });
-        }
-
         [HttpPost]
         public IActionResult Login(UserAuthenticationModel model)
         {
