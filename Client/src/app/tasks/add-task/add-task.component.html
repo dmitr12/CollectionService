@@ -12,7 +12,7 @@
              </mat-select>
            </mat-form-field>
         </div>
-        <div class="col-8">
+        <div class="col-8" style="padding-right: 0px;">
           <div *ngIf="formAdd?.get('apiId')?.value == 2" class="input-field" style="margin-top: 16px;">
             <input id="filterText" required type="text" formControlName="filterText">
             <label for="filterText">Город:</label>
@@ -20,6 +20,16 @@
                 <span *ngIf="formAdd?.get('filterText')?.errors?.required">Заполните поле</span>
             </span>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4 input-field" style="padding-left: 0px;">
+          <input id="startDate" required type="date" formControlName="startDate" min="{{datepipe.transform(date, 'yyyy-MM-dd')}}">
+          <label for="startDate">Дата:</label>
+        </div>
+        <div class="col-8 input-field" style="padding-right: 0px">
+          <input [ngxTimepicker]="picker" formControlName="startTime" readonly>
+          <ngx-material-timepicker #picker></ngx-material-timepicker>
         </div>
       </div>
         <div>
@@ -42,13 +52,13 @@
             <label for="periodicityMin">Периодичность (мин):</label>
             <span class="helper-text red-text" *ngIf="formAdd?.get('periodicityMin')?.invalid && formAdd?.get('periodicityMin')?.dirty">
                 <span *ngIf="formAdd?.get('periodicityMin')?.errors?.required">Заполните поле</span>
-                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.min">Минимум 5 минут</span>
+                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.min">Минимум 2 минут</span>
             </span>
           </div>
         </div>
         <div class="center-align">
           <button class="btn waves-effect waves-light" [disabled]='formAdd?.invalid' style="background-color: #11d62b; margin-right: 20px;">Добавить</button>
-          <button mat-dialog-close class="btn waves-effect waves-light" style="background-color: #fa053e;">Отмена</button>
+          <button mat-dialog-close="false" class="btn waves-effect waves-light" style="background-color: #fa053e;">Отмена</button>
         </div>
       </form>  
 </mat-dialog-content>

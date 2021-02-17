@@ -15,6 +15,9 @@ namespace Server.Models.View_Models
         public string Description { get; set; }
 
         [Required]
+        public string StartTask { get; set; }
+
+        [Required]
         public int PeriodicityMin { get; set; }
 
         [Required]

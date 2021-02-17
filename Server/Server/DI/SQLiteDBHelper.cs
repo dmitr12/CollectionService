@@ -23,13 +23,12 @@ namespace Server.DI
             await con.CloseAsync();
         }
 
-        public async Task<int> ExecuteQuery<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class
+        public async Task<object> ExecuteQuery<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class
         {
             await con.OpenAsync();
             using(SqliteCommand command = AddParameters<T>(queryString, objForParameters, parameterNames, con))
             {
-                int count = command.ExecuteNonQueryAsync().Result;
-                return count;
+                return await command.ExecuteScalarAsync();
             }
         }
 

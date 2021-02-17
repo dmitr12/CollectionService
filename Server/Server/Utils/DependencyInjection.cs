@@ -17,6 +17,7 @@ namespace Server.Utils
             services.AddScoped<IGeneratorToken, GeneratorToken>();
             services.AddScoped<UserManager>();
             services.AddScoped<TaskManager>();
+            services.AddScoped<ConverterCsv>();
             services.AddScoped<IMailSender, MailSender>();
         }
     }

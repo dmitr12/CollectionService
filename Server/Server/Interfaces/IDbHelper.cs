@@ -9,7 +9,7 @@ namespace Server.Interfaces
 {
     public interface IDbHelper
     {
-        Task<int> ExecuteQuery<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class;
+        Task<object> ExecuteQuery<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class;
         Task<List<T>> GetData<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class;
         Task<bool> HasRows<T>(string queryString, T objForParameters, List<string> parameterNames) where T : class;
         Task Close();

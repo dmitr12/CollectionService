@@ -37,6 +37,10 @@ export class AuthenticationService {
     return jwt_decode<Token>(localStorage.getItem(TOKEN)!).login;
   }
 
+  getCurrentUserId() {
+    return jwt_decode<Token>(localStorage.getItem(TOKEN)!).sub;
+  }
+
   isAuth(): any {
     let token = localStorage.getItem(TOKEN);
     return token && !this.jwjtHelper.isTokenExpired(token);

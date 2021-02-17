@@ -58,5 +58,17 @@ namespace Server.Managers
                 dbHelper.Close();
             }
         }
+
+        public User GetUserById(int userId)
+        {
+            try
+            {
+               return dbHelper.GetData("select * from users where UserId = @UserId", new User { UserId = userId }, new List<string> { "UserId" }).Result[0];
+            }
+            finally
+            {
+                dbHelper.Close();
+            }
+        }
     }
 }

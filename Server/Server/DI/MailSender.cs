@@ -2,9 +2,12 @@
 using Server.Models.Mail;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Server.DI
@@ -19,6 +22,13 @@ namespace Server.DI
                 message.To.Add(new MailAddress(mailClass.ToMail));
                 message.Subject = mailClass.Subject;
                 message.Body = mailClass.Body;
+                MemoryStream stream = new MemoryStream();
+                StreamWriter writer = new StreamWriter(stream);
+                writer.Write(mailClass.Attachment.ToString());
+                writer.Flush();
+                stream.Position = 0;
+                Attachment att = new Attachment(stream, "data.csv");
+                message.Attachments.Add(att);
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
                     smtp.Credentials = new NetworkCredential(mailClass.FromMail, mailClass.FromMailPassword);

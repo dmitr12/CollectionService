@@ -1,24 +1,32 @@
-<div>
-  <span class="material-icons btn-item" (click)="testOpenDialog()">add_circle_outline</span>
-</div>
+
 <div class="table-container">
+  <div class="row">
+    <div class="col">
+      <button class="btn waves-effect waves-light" style="background-color: #11d62b" (click)="add()">Добавить задачу</button>
+    </div>
+    <div class="col right-align">
+      <button class="btn waves-effect waves-light" style="background-color: #11d62b" (click)="reload()">Обновить список</button>
+    </div>
+  </div>
     <table class="centered">
         <thead>
           <tr>
-              <th data-field="id">Название</th>
-              <th data-field="name">Описание</th>
-              <th data-field="price">Последнее выполнение</th>
-              <th data-field="action"></th>
+              <th>Название</th>
+              <th>Описание</th>
+              <th>Периодичность (мин)</th>
+              <th>Последнее выполнение</th>
+              <th></th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let task of tasks">
               <td>{{task.name}}</td>
               <td>{{task.description}}</td>
-              <td>{{task.last}}</td>
+              <td>{{task.periodicityMin}}</td>
+              <td>{{task.lastExecution}}</td>
               <td>
                 <span class="material-icons btn-item">edit</span>
-                <span class="material-icons btn-item btn-bucket">delete</span>
+                <span class="material-icons btn-item btn-bucket" (click)="deleteTask(task.taskId)">delete</span>
               </td>
           </tr>
         </tbody>

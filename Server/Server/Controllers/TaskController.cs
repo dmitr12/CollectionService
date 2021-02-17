@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using Server.DI;
 using Server.Interfaces;
 using Server.Managers;
@@ -22,13 +24,31 @@ namespace Server.Controllers
     public class TaskController : ControllerBase
     {
         private readonly TaskManager taskManager;
-        private readonly IConfiguration config;
-        private readonly IMailSender mailSender;
-        public TaskController(TaskManager taskManager, IConfiguration config, IMailSender mailSender)
+        private readonly UserManager userManager;
+
+        static int count=0;
+
+        private int UserId => int.Parse(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+
+        public TaskController(TaskManager taskManager, UserManager userManager)
         {
             this.taskManager = taskManager;
-            this.config = config;
-            this.mailSender = mailSender;
+            this.userManager = userManager;
+            count++;
+        }
+
+        [HttpGet("GetTasksByUserId/{userId}")]
+        public IActionResult GetTasksByUserId(int userId)
+        {
+            return Ok(taskManager.GetTasksByUserId(userId));
+        }
+
+        [HttpDelete("DeleteTask/{idTask}")]
+        //[Authorize(Roles = "1")]
+        public IActionResult DeleteTask(int idTask)
+        {
+            taskManager.DeleteTask(idTask);
+            return Ok();
         }
 
         [HttpGet("Apies")]
@@ -38,18 +58,11 @@ namespace Server.Controllers
         }
 
         [HttpPost("AddTask")]
-        //[Authorize(Roles = "1")]
-        public IActionResult AddTask(/*TaskModel model*/)
+        [Authorize(Roles = "1")]
+        public IActionResult AddTask(TaskModel model)
         {
-            JobScheduler.StartJob(mailSender, new MailClass
-            {
-                FromMail = config.GetSection("Mail").Value,
-                FromMailPassword = config.GetSection("MailPassword").Value,
-                ToMail = "dyrda.dmitrij@mail.ru",
-                Subject = "asdas",
-                Body = "11111"
-            });
-            return Ok();
+            User user = userManager.GetUserById(UserId);
+            return Ok(new { msg = taskManager.AddTask<WeatherInfo>(model, user) });
         }
     }
 }

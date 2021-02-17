@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  url: 'https://localhost:44309/'
+  url: 'https://localhost:44309/',
+  allowedDomains: ['localhost:44309']
 };
 
 /*

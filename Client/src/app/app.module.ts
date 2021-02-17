@@ -16,6 +16,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AddTaskComponent } from './tasks/add-task/add-task.component';
 import {MatSelectModule} from '@angular/material/select';
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { environment } from 'src/environments/environment';
+import {DatePipe} from '@angular/common';
+import { DeleteTaskComponent } from './tasks/delete-task/delete-task.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +29,8 @@ import {MatSelectModule} from '@angular/material/select';
     RegisterComponent,
     ApplayoutComponent,
     TasksComponent,
-    AddTaskComponent
+    AddTaskComponent,
+    DeleteTaskComponent
   ],
   imports: [
     BrowserModule,
@@ -35,15 +40,17 @@ import {MatSelectModule} from '@angular/material/select';
     NgbModule,
     MatDialogModule,
     MatSelectModule,
+    NgxMaterialTimepickerModule,
     HttpClientModule,
     JwtModule.forRoot({
       config:{
-        tokenGetter: getToken
+        tokenGetter: getToken,
+        allowedDomains: environment.allowedDomains
       }
     }),
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [AddTaskComponent]
 })

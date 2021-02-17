@@ -16,5 +16,6 @@ namespace Server.Models.DB_Models
         public string FilterText { get; set; }
         public int UserId { get; set; }
         public int ApiId { get; set; }
+        public int CountExecutions { get; set; }
     }
 }
