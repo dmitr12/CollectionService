@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
 using Server.Interfaces;
+using Server.Models.Api.JokeApi;
+using Server.Models.Api.NumbersApi;
 using Server.Models.Api.WeatherApi;
 using Server.Models.DB_Models;
 using Server.Models.Mail;
@@ -142,6 +144,44 @@ namespace Server.Managers
             }
         }
 
+        public string UpdateTask<T>(TaskModel taskModel, User user)where T : class
+        {
+            try
+            {
+                Api apiInfo = GetApiInfo(taskModel.ApiId);
+                T dataFromApi = GetFilteredData<T>(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
+                if (dataFromApi == null)
+                    return "Неверный параметр фильтра";
+                UpdateTaskInDb(new Job
+                {
+                    TaskId = taskModel.TaskId,
+                    ApiId = taskModel.ApiId,
+                    CountExecutions = 0,
+                    Description = taskModel.Description,
+                    FilterText = taskModel.FilterText,
+                    LastExecution = "",
+                    Name = taskModel.Name,
+                    PeriodicityMin = taskModel.PeriodicityMin,
+                    StartTask = taskModel.StartTask,
+                    UserId = user.UserId
+                });
+                JobScheduler.DeleteJob(taskModel.TaskId.ToString());
+                JobScheduler.StartJob<T>(mailSender, new MailClass
+                {
+                    FromMail = config.GetSection("Mail").Value,
+                    FromMailPassword = config.GetSection("MailPassword").Value,
+                    ToMail = user.Email,
+                    Subject = "Запрос данных",
+                    Body = $"Обновленные данные"
+                }, taskModel, taskModel.TaskId, this, apiInfo);
+                return null;
+            }
+            catch
+            {
+                return "Возникла ошибка при изменении задачи";
+            }
+        }
+
         public string AddTask<T>(TaskModel taskModel, User user) where T: class
         {
             int addedTaskId = -1;
@@ -179,9 +219,21 @@ namespace Server.Managers
         {
             T data = null;
             StringBuilder sb = new StringBuilder(queryString);
-            sb.Append($"&{filterColumn}={filterParameterValue}");
+            if (filterColumn == "/")
+            {
+                if (queryString.Contains('?'))
+                {
+                    int index = queryString.IndexOf('?');
+                    sb.Insert(index, $"{filterColumn}{filterParameterValue}");
+                }
+                else
+                    sb.Append(filterParameterValue);
+            }
+            else
+                sb.Append($"&{filterColumn}={filterParameterValue}");
             var client = new RestClient(sb.ToString());
             var request = new RestRequest(Method.GET);
+            request.AddHeader("Content-Type","application/json; charset=utf-8");
             IRestResponse response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
                 data = JsonConvert.DeserializeObject<T>(response.Content);
@@ -221,6 +273,10 @@ namespace Server.Managers
                     };
                     if(apiInfo.ApiId == 2)
                         JobScheduler.StartJob<WeatherInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
+                    if(apiInfo.ApiId == 3)
+                        JobScheduler.StartJob<NumbersInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
+                    if (apiInfo.ApiId == 4)
+                        JobScheduler.StartJob<JokeInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
                 }
             }
             finally

@@ -21,11 +21,19 @@ export class TaskService {
     return this.httpClient.get<TaskModel[]>(`${environment.url}api/task/GetTasksByUserId/${userId}`);
   }
 
+  getTaskById(taskId: number): Observable<TaskModel>{
+    return this.httpClient.get<TaskModel>(`${environment.url}api/task/gettaskbyid/${taskId}`);
+  }
+
   deleteTask(idTask: number){
     return this.httpClient.delete(`${environment.url}api/task/DeleteTask/${idTask}`);
   }
 
   addTask(taskModel: TaskViewModel){
     return this.httpClient.post(`${environment.url}api/task/addtask`, taskModel);
+  }
+
+  updateTask(taskModel: TaskViewModel){
+    return this.httpClient.put(`${environment.url}api/task/updatetask`, taskModel);
   }
 }

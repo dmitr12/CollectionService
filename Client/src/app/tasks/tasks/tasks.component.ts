@@ -5,6 +5,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { TaskService } from 'src/app/services/task.service';
 import { AddTaskComponent } from '../add-task/add-task.component';
 import { DeleteTaskComponent } from '../delete-task/delete-task.component';
+import { UpdateTaskComponent } from '../update-task/update-task.component';
 
 @Component({
   selector: 'app-tasks',
@@ -24,6 +25,18 @@ export class TasksComponent implements OnInit {
     const dialogConfig=new MatDialogConfig();
     dialogConfig.width = "40%";
     this.dialogSource = this.dialog.open(AddTaskComponent, dialogConfig);
+    this.dialogSource.afterClosed().subscribe((result: boolean)=>{
+      if(result != false){
+       this.reload()
+      }   
+    })
+  }
+
+  editTask(idTask: number){
+    const dialogConfig=new MatDialogConfig();
+    dialogConfig.width = "40%";
+    dialogConfig.data=idTask;
+    this.dialogSource = this.dialog.open(UpdateTaskComponent, dialogConfig);
     this.dialogSource.afterClosed().subscribe((result: boolean)=>{
       if(result != false){
        this.reload()

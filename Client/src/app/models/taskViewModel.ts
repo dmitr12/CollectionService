@@ -12,6 +12,7 @@ export class TaskViewModel{
         this.apiId=apiId;
     }
 
+    taskId: number = -1;
     name: string;
     description: string;
     startTask: string;

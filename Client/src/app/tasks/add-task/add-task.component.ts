@@ -30,17 +30,17 @@ export class AddTaskComponent implements OnInit {
   apiList: any;
   selectedApi = '';
   date=new Date();
-
-
-  taaaa: any;
-
-
+  
   ngOnInit(): void {
     this.taskService.getListApi().subscribe((result: Api[])=>{
       this.apiList=result;
     }, error=>{
       alert(error.message);
     });
+
+    this.formAdd.controls['apiId'].valueChanges.subscribe(value => { 
+      this.formAdd.controls['filterText'].setValue('');
+     });
   }
 
   add(){

@@ -25,7 +25,7 @@
               <td>{{task.periodicityMin}}</td>
               <td>{{task.lastExecution}}</td>
               <td>
-                <span class="material-icons btn-item">edit</span>
+                <span class="material-icons btn-item" (click)="editTask(task.taskId)">edit</span>
                 <span class="material-icons btn-item btn-bucket" (click)="deleteTask(task.taskId)">delete</span>
               </td>
           </tr>

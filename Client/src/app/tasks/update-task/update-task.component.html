@@ -1,6 +1,6 @@
-<h2 mat-dialog-title class="center-align">Добавление задачи</h2>
+<h2 mat-dialog-title class="center-align">Изменение задачи</h2>
 <mat-dialog-content>
-    <form [formGroup]="formAdd" (ngSubmit)="add()">
+    <form [formGroup]="formUpd" (ngSubmit)="update()">
       <div class="row">
         <div class="col-4" style="padding-left: 0px;">
           <mat-form-field style="width: 100%;">
@@ -13,14 +13,14 @@
            </mat-form-field>
         </div>
         <div class="col-8" style="padding-right: 0px;">
-          <div *ngIf="formAdd?.get('apiId')?.value == 2" class="input-field" style="margin-top: 16px;">
+          <div *ngIf="formUpd?.get('apiId')?.value == 2" class="input-field" style="margin-top: 16px;">
             <input id="filterText" required type="text" formControlName="filterText">
             <label class="active" for="filterText">Город:</label>
-            <span class="helper-text red-text" *ngIf="formAdd?.get('filterText')?.invalid && formAdd?.get('filterText')?.dirty">
-                <span *ngIf="formAdd?.get('filterText')?.errors?.required">Заполните поле</span>
+            <span class="helper-text red-text" *ngIf="formUpd?.get('filterText')?.invalid && formUpd?.get('filterText')?.dirty">
+                <span *ngIf="formUpd?.get('filterText')?.errors?.required">Заполните поле</span>
             </span>
           </div>
-          <mat-form-field *ngIf="formAdd?.get('apiId')?.value == 3" style="width: 100%;">
+          <mat-form-field *ngIf="formUpd?.get('apiId')?.value == 3" style="width: 100%;">
             <label>Type of fact</label>
              <mat-select formControlName="filterText">
               <mat-option value="math">Math</mat-option>
@@ -28,7 +28,7 @@
               <mat-option value="year">Year</mat-option>
              </mat-select>
            </mat-form-field>
-           <mat-form-field *ngIf="formAdd?.get('apiId')?.value == 4" style="width: 100%;">
+           <mat-form-field *ngIf="formUpd?.get('apiId')?.value == 4" style="width: 100%;">
             <label>Type of joke</label>
              <mat-select formControlName="filterText">
               <mat-option value="Programming">Programming</mat-option>
@@ -52,29 +52,29 @@
         <div>
           <div class="input-field">
             <input id="name" required type="text" formControlName="name">
-            <label for="name">Название задачи:</label>
-            <span class="helper-text red-text" *ngIf="formAdd?.get('name')?.invalid && formAdd?.get('name')?.dirty">
-                <span *ngIf="formAdd?.get('name')?.errors?.required">Заполните поле</span>
+            <label class="active" for="name">Название задачи:</label>
+            <span class="helper-text red-text" *ngIf="formUpd?.get('name')?.invalid && formUpd?.get('name')?.dirty">
+                <span *ngIf="formUpd?.get('name')?.errors?.required">Заполните поле</span>
             </span>
           </div>
           <div class="input-field">
             <input id="description" required type="text" formControlName="description">
-            <label for="description">Описание задачи:</label>
-            <span class="helper-text red-text" *ngIf="formAdd?.get('description')?.invalid && formAdd?.get('description')?.dirty">
-                <span *ngIf="formAdd?.get('description')?.errors?.required">Заполните поле</span>
+            <label class="active" for="description">Описание задачи:</label>
+            <span class="helper-text red-text" *ngIf="formUpd?.get('description')?.invalid && formUpd?.get('description')?.dirty">
+                <span *ngIf="formUpd?.get('description')?.errors?.required">Заполните поле</span>
             </span>
           </div>
           <div class="input-field">
             <input id="periodicityMin" required type="number" formControlName="periodicityMin">
-            <label for="periodicityMin">Периодичность (мин):</label>
-            <span class="helper-text red-text" *ngIf="formAdd?.get('periodicityMin')?.invalid && formAdd?.get('periodicityMin')?.dirty">
-                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.required">Заполните поле</span>
-                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.min">Минимум 2 минуты</span>
+            <label class="active" for="periodicityMin">Периодичность (мин):</label>
+            <span class="helper-text red-text" *ngIf="formUpd?.get('periodicityMin')?.invalid && formUpd?.get('periodicityMin')?.dirty">
+                <span *ngIf="formUpd?.get('periodicityMin')?.errors?.required">Заполните поле</span>
+                <span *ngIf="formUpd?.get('periodicityMin')?.errors?.min">Минимум 2 минуты</span>
             </span>
           </div>
         </div>
         <div class="center-align">
-          <button class="btn waves-effect waves-light" [disabled]='formAdd?.invalid' style="background-color: #11d62b; margin-right: 20px;">Добавить</button>
+          <button class="btn waves-effect waves-light" [disabled]='formUpd?.invalid' style="background-color: #11d62b; margin-right: 20px;">Изменить</button>
           <button mat-dialog-close="false" class="btn waves-effect waves-light" style="background-color: #fa053e;">Отмена</button>
         </div>
       </form>  

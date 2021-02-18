@@ -1,4 +1,6 @@
-﻿using Server.Models.Api.WeatherApi;
+﻿using Server.Models.Api.JokeApi;
+using Server.Models.Api.NumbersApi;
+using Server.Models.Api.WeatherApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,16 @@ namespace Server.Utils
                 WeatherInfo wi = obj as WeatherInfo;
                 return GetStringCsv(new WeatherCSV { Name = wi.Name, Humidity = wi.Main.Humidity, Temp = wi.Main.Temp, WindSpeed = wi.Wind.Speed },
                     new List<string> { "Name", "Humidity", "Temp", "WindSpeed" });
+            }
+            else if(typeof(T)==typeof(NumbersInfo))
+            {
+                NumbersInfo ni = obj as NumbersInfo;
+                return GetStringCsv(new NumbersInfo { Number = ni.Number, Text = ni.Text }, new List<string> { "Number", "Text"});
+            }
+            else if (typeof(T) == typeof(JokeInfo))
+            {
+                JokeInfo ji = obj as JokeInfo;
+                return GetStringCsv(new JokeInfo { Category = ji.Category, Joke=ji.Joke }, new List<string> { "Category", "Joke" });
             }
             return null;
         }

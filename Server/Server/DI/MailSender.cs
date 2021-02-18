@@ -22,13 +22,15 @@ namespace Server.DI
                 message.To.Add(new MailAddress(mailClass.ToMail));
                 message.Subject = mailClass.Subject;
                 message.Body = mailClass.Body;
-                MemoryStream stream = new MemoryStream();
-                StreamWriter writer = new StreamWriter(stream);
-                writer.Write(mailClass.Attachment.ToString());
-                writer.Flush();
-                stream.Position = 0;
-                Attachment att = new Attachment(stream, "data.csv");
-                message.Attachments.Add(att);
+                if (mailClass.Attachment != null){
+                    MemoryStream stream = new MemoryStream();
+                    StreamWriter writer = new StreamWriter(stream);
+                    writer.Write(mailClass.Attachment.ToString());
+                    writer.Flush();
+                    stream.Position = 0;
+                    Attachment att = new Attachment(stream, "data.csv");
+                    message.Attachments.Add(att);
+                }
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
                     smtp.Credentials = new NetworkCredential(mailClass.FromMail, mailClass.FromMailPassword);

@@ -8,6 +8,8 @@ namespace Server.Models.View_Models
 {
     public class TaskModel
     {
+        public int TaskId { get; set; }
+
         [Required]
         public string Name { get; set; }
 

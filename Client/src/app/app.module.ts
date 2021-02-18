@@ -20,6 +20,7 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import { environment } from 'src/environments/environment';
 import {DatePipe} from '@angular/common';
 import { DeleteTaskComponent } from './tasks/delete-task/delete-task.component';
+import { UpdateTaskComponent } from './tasks/update-task/update-task.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DeleteTaskComponent } from './tasks/delete-task/delete-task.component';
     ApplayoutComponent,
     TasksComponent,
     AddTaskComponent,
-    DeleteTaskComponent
+    DeleteTaskComponent,
+    UpdateTaskComponent
   ],
   imports: [
     BrowserModule,
