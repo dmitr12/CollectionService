@@ -21,6 +21,7 @@ import { environment } from 'src/environments/environment';
 import {DatePipe} from '@angular/common';
 import { DeleteTaskComponent } from './tasks/delete-task/delete-task.component';
 import { UpdateTaskComponent } from './tasks/update-task/update-task.component';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { UpdateTaskComponent } from './tasks/update-task/update-task.component';
     TasksComponent,
     AddTaskComponent,
     DeleteTaskComponent,
-    UpdateTaskComponent
+    UpdateTaskComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,

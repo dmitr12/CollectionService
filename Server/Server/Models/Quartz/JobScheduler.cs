@@ -27,7 +27,7 @@ namespace Server.Models.Quartz
             IScheduler scheduler = GetIntanceScheduler();
             IJobDetail jobDetail = null;
             if(!scheduler.IsStarted)
-                await scheduler.Start();
+            await scheduler.Start();
             TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(new JobKey("MailJob")).WithIdentity(idTask.ToString()).WithSimpleSchedule(opt =>
              opt.WithIntervalInMinutes(model.PeriodicityMin).RepeatForever().WithMisfireHandlingInstructionFireNow());
             if (dt.AddMinutes(10) > DateTime.Now && dt > DateTime.Now)

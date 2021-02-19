@@ -41,6 +41,10 @@ export class AuthenticationService {
     return jwt_decode<Token>(localStorage.getItem(TOKEN)!).sub;
   }
 
+  getCurrentUserRole(){
+    return jwt_decode<Token>(localStorage.getItem(TOKEN)!).role;
+  }
+
   isAuth(): any {
     let token = localStorage.getItem(TOKEN);
     return token && !this.jwjtHelper.isTokenExpired(token);

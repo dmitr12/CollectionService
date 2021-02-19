@@ -29,9 +29,9 @@ namespace Server.Managers
                 {
                     return "Пользователь с таким Login или Email уже есть";
                 }
-                dbHelper.ExecuteQuery($"insert into users(username, email, password, roleid) values(@UserName, @Email, @Password, @RoleId)",
-                    new User { UserName = model.UserName, Email = model.Email, Password = HashClass.GetHash(model.Password), RoleId = 1 },
-                    new List<string> { "UserName", "Email", "Password", "RoleId" });
+                dbHelper.ExecuteQuery($"insert into users(username, email, password, roleid, countcompletedtasks) values(@UserName, @Email, @Password, @RoleId, @CountCompletedTasks)",
+                    new User { UserName = model.UserName, Email = model.Email, Password = HashClass.GetHash(model.Password), RoleId = 1 , CountCompletedTasks=0},
+                    new List<string> { "UserName", "Email", "Password", "RoleId", "CountCompletedTasks"});
                 return null;
             }
             finally
@@ -52,6 +52,31 @@ namespace Server.Managers
                     return token;
                 }
                 return null;
+            }
+            finally
+            {
+                dbHelper.Close();
+            }
+        }
+
+        public void InceremntUserCompletedTasks(int userId)
+        {
+            try
+            {
+                dbHelper.ExecuteQuery("update users set CountCompletedTasks=CountCompletedTasks+1 where userId=@UserId", new User { UserId = userId },
+                    new List<string> { "UserId" });
+            }
+            finally
+            {
+                dbHelper.Close();
+            }
+        }
+
+        public List<User> GetAllUsers()
+        {
+            try
+            {
+                return dbHelper.GetData<User>("select * from users where RoleId=1", null, null).Result;
             }
             finally
             {

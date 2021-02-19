@@ -42,7 +42,7 @@
       <div class="row">
         <div class="col-4 input-field" style="padding-left: 0px;">
           <input id="startDate" required type="date" formControlName="startDate" min="{{datepipe.transform(date, 'yyyy-MM-dd')}}">
-          <label for="startDate">Дата:</label>
+          <label class="active" for="startDate">Дата:</label>
         </div>
         <div class="col-8 input-field" style="padding-right: 0px">
           <input [ngxTimepicker]="picker" formControlName="startTime" readonly>

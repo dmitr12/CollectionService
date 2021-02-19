@@ -110,6 +110,22 @@ namespace Server.Managers
             }
         }
 
+        public List<UserTasksInfo> GetStatistics()
+        {
+            List<UserTasksInfo> statistics = new List<UserTasksInfo>();
+            foreach(User user in userManager.GetAllUsers())
+            {
+                statistics.Add(new UserTasksInfo
+                {
+                    UserId = user.UserId,
+                    UserName=user.UserName,
+                    CountCompletedTasks = user.CountCompletedTasks,
+                    CountActiveTasks = GetTasksByUserId(user.UserId).Count
+                });
+            }
+            return statistics;
+        }
+
         public long AddTaskToDb(TaskModel taskViewModel, int userId)
         {
             try
@@ -142,6 +158,11 @@ namespace Server.Managers
             {
                 dbHelper.Close();
             }
+        }
+
+        public void UpdateCountCompletedUserTasks(int userId)
+        {
+            userManager.InceremntUserCompletedTasks(userId);
         }
 
         public string UpdateTask<T>(TaskModel taskModel, User user)where T : class

@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Api } from '../models/api';
 import { TaskModel } from '../models/taskModel';
 import { TaskViewModel } from '../models/taskViewModel';
+import { UserTasksInfo} from '../models/userTasksInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,10 @@ export class TaskService {
 
   getTaskById(taskId: number): Observable<TaskModel>{
     return this.httpClient.get<TaskModel>(`${environment.url}api/task/gettaskbyid/${taskId}`);
+  }
+
+  getStatistics(): Observable<UserTasksInfo[]>{
+    return this.httpClient.get<UserTasksInfo[]>(`${environment.url}api/task/getstatistics`);
   }
 
   deleteTask(idTask: number){

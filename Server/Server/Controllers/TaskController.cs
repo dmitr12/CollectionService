@@ -48,6 +48,15 @@ namespace Server.Controllers
             return Ok(taskManager.GetTaskById(taskId));
         }
 
+
+        [HttpGet("GetStatistics")]
+        [Authorize(Roles = "2")]
+        public IActionResult GetStatistics()
+        {
+            return Ok(taskManager.GetStatistics());
+        }
+
+
         [HttpDelete("DeleteTask/{idTask}")]
         [Authorize(Roles = "1")]
         public IActionResult DeleteTask(int idTask)

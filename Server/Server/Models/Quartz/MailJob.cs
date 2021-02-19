@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Server.Models.Quartz
 {
-    [DisallowConcurrentExecution]
     public class MailJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)
@@ -26,7 +25,8 @@ namespace Server.Models.Quartz
             int taskId = jobDataMap.GetInt("TaskId");
             Job task = taskManager.GetTaskById(taskId);
             var obj = jobDataMap.Get("ObjForApi");
-            mailClass.Body = $"Данные на {DateTime.Now}";
+            DateTime dt = DateTime.Now;
+            mailClass.Body = $"Данные на {dt}";
             if(obj.GetType() == typeof(WeatherInfo))
                 mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<WeatherInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
             else if(obj.GetType()==typeof(NumbersInfo))
@@ -34,9 +34,9 @@ namespace Server.Models.Quartz
             else if (obj.GetType() == typeof(JokeInfo))
                 mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<JokeInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
             await mailSender.SendMail(mailClass);
-            task.CountExecutions++;
-            task.LastExecution = DateTime.Now.ToString();
+            task.LastExecution = dt.ToString();
             taskManager.UpdateTaskInDb(task);
+            taskManager.UpdateCountCompletedUserTasks(task.UserId);
         }
     }
 }

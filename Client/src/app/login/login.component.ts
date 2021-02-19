@@ -24,7 +24,12 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.authenticationService.login(new UserAuthentication(this.formLogin.value.login, this.formLogin.value.password)).subscribe(res => {
-      this.router.navigate(['']);
+      if(this.authenticationService.getCurrentUserRole()==1){
+        this.router.navigate(['']);
+      }
+      else if(this.authenticationService.getCurrentUserRole()==2){
+        this.router.navigate(['/admin']);
+      }
     }, error => {
         if (error.status == 401)
           alert("Неверный логин или пароль");

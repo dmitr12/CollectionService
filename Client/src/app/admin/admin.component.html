@@ -1,0 +1,23 @@
+<h2 class="center-align mt-5">Статистика использования сервиса</h2>
+<div class="table-container">
+    <div class="col left-align">
+        <button class="btn waves-effect waves-light" style="background-color: #11d62b" (click)="reload()">Обновить список</button>
+      </div>
+      <table class="centered">
+          <thead>
+            <tr>
+                <th>Пользователь</th>
+                <th>Количество выполненных задач</th>
+                <th>Количество активных задач</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let userInfo of statistics">
+                <td>{{userInfo.userName}}</td>
+                <td>{{userInfo.countCompletedTasks}}</td>
+                <td>{{userInfo. countActiveTasks}}</td>
+            </tr>
+          </tbody>
+        </table>
+  </div>
+  

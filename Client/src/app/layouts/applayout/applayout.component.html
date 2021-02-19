@@ -1,5 +1,6 @@
 <nav>
     <div class="nav-wrapper">
+      <p class="left" style="margin-left: 60px; cursor: default;">{{authenticationService.getCurrentUserName()}}</p>
       <ul class="right">
         <li routerLinkActive="active"><a (click)="logout()">Выйти с аккаунта</a></li>
       </ul>
