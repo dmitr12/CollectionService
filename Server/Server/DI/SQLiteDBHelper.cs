@@ -34,24 +34,20 @@ namespace Server.DI
 
         public async Task<List<T>> GetData<T>(string queryString, T objForParameters, List<string> parameterNames) where T: class
         {
-            List<T> list = new List<T>();
-            Type type = typeof(T);
+            var list = new List<T>();
+            var type = typeof(T);
             await con.OpenAsync();
-            using (SqliteCommand command = AddParameters(queryString, objForParameters, parameterNames, con))
+            await using var command = AddParameters(queryString, objForParameters, parameterNames, con);
+            var reader = command.ExecuteReaderAsync().Result;
+            while (await reader.ReadAsync())
             {
-                SqliteDataReader reader = command.ExecuteReaderAsync().Result;
-                while (await reader.ReadAsync())
+                var instance = Activator.CreateInstance<T>();
+                for (var i = 0; i < reader.FieldCount; i++)
                 {
-                    T instance = Activator.CreateInstance<T>();
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        if (reader.GetValue(i).GetType() == typeof(Int64))
-                            type.GetProperty(reader.GetName(i)).SetValue(instance, Convert.ToInt32(reader.GetValue(i)));
-                        else
-                            type.GetProperty(reader.GetName(i)).SetValue(instance, reader.GetValue(i));
-                    }
-                    list.Add(instance);
+                    type.GetProperty(reader.GetName(i))?.SetValue(instance,
+                        reader.GetValue(i) is long ? Convert.ToInt32(reader.GetValue(i)) : reader.GetValue(i));
                 }
+                list.Add(instance);
             }
             return list;
         }
@@ -70,15 +66,15 @@ namespace Server.DI
 
         private SqliteCommand AddParameters<T>(string queryString, T obj, List<string> parameterNames, SqliteConnection connection)
         {
-            Type type = typeof(T);
-            SqliteCommand command = new SqliteCommand(queryString, connection);
+            var type = typeof(T);
+            var command = new SqliteCommand(queryString, connection);
             if (parameterNames != null)
             {
-                for (int i = 0; i < parameterNames.Count; i++)
+                foreach (var t in parameterNames)
                 {
-                    command.Parameters.AddWithValue($"@{parameterNames[i]}", type.GetProperty($"{parameterNames[i]}").GetValue(obj));
+                    command.Parameters.AddWithValue($"@{t}", type.GetProperty($"{t}")?.GetValue(obj));
                 }
-            }  
+            }
             return command;
         }
     }

@@ -50,7 +50,7 @@ namespace Server.Controllers
 
 
         [HttpGet("GetStatistics")]
-        [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")] //Admin
         public IActionResult GetStatistics()
         {
             return Ok(taskManager.GetStatistics());
@@ -58,7 +58,7 @@ namespace Server.Controllers
 
 
         [HttpDelete("DeleteTask/{idTask}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] //User
         public IActionResult DeleteTask(int idTask)
         {
             taskManager.DeleteTask(idTask);
@@ -72,29 +72,31 @@ namespace Server.Controllers
         }
 
         [HttpPost("AddTask")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] //User
         public IActionResult AddTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            if(model.ApiId==2)
-                return Ok(new { msg = taskManager.AddTask<WeatherInfo>(model, user) });
-            else if(model.ApiId==3)
-                return Ok(new { msg = taskManager.AddTask<NumbersInfo>(model, user) });
-            else
-                return Ok(new { msg = taskManager.AddTask<JokeInfo>(model, user) });
+            switch (model.ApiId)
+            {
+                case (int)ApiesId.ApiWeather: return Ok(new { msg = taskManager.AddTask<WeatherInfo>(model, user) });
+                case (int)ApiesId.ApiNumber: return Ok(new { msg = taskManager.AddTask<NumbersInfo>(model, user) });
+                case (int)ApiesId.ApiJoke: return Ok(new { msg = taskManager.AddTask<JokeInfo>(model, user) });
+            }
+            return BadRequest();
         }
 
         [HttpPut("UpdateTask")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] //User
         public IActionResult UpdateTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            if (model.ApiId == 2)
-                return Ok(new { msg = taskManager.UpdateTask<WeatherInfo>(model, user) });
-            else if (model.ApiId == 3)
-                return Ok(new { msg = taskManager.UpdateTask<NumbersInfo>(model, user) });
-            else
-                return Ok(new { msg = taskManager.UpdateTask<JokeInfo>(model, user) });
+            switch (model.ApiId)
+            {
+                case (int)ApiesId.ApiWeather: return Ok(new { msg = taskManager.UpdateTask<WeatherInfo>(model, user) });
+                case (int)ApiesId.ApiNumber: return Ok(new { msg = taskManager.UpdateTask<NumbersInfo>(model, user) });
+                case (int)ApiesId.ApiJoke: return Ok(new { msg = taskManager.UpdateTask<JokeInfo>(model, user) });
+            }
+            return BadRequest();
         }
     }
 }

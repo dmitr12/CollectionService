@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
+using Server.DI;
 using Server.Interfaces;
 using Server.Models.Api.JokeApi;
 using Server.Models.Api.NumbersApi;
@@ -61,7 +62,7 @@ namespace Server.Managers
             }
         }
 
-        public void DeleteTaskFromBd(int idTask)
+        public void DeleteTaskFromDb(int idTask)
         {
             try
             {
@@ -83,20 +84,7 @@ namespace Server.Managers
             {
                 dbHelper.Close();
             }
-        }
-
-        public void DeleteTaskFromDb(int idTask)
-        {
-            try
-            {
-                dbHelper.ExecuteQuery("delete from Tasks where TaskId=@TaskId", new Job { TaskId = idTask }, new List<string> { "TaskId" });
-                JobScheduler.DeleteJob(idTask.ToString());
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
-        }
+        }    
 
         public List<Job> GetTasksByUserId(int userId)
         {
@@ -112,18 +100,13 @@ namespace Server.Managers
 
         public List<UserTasksInfo> GetStatistics()
         {
-            List<UserTasksInfo> statistics = new List<UserTasksInfo>();
-            foreach(User user in userManager.GetAllUsers())
+            return userManager.GetAllUsers().Select(user => new UserTasksInfo
             {
-                statistics.Add(new UserTasksInfo
-                {
-                    UserId = user.UserId,
-                    UserName=user.UserName,
-                    CountCompletedTasks = user.CountCompletedTasks,
-                    CountActiveTasks = GetTasksByUserId(user.UserId).Count
-                });
-            }
-            return statistics;
+                UserId = user.UserId,
+                UserName = user.UserName,
+                CountCompletedTasks = user.CountCompletedTasks,
+                CountActiveTasks = GetTasksByUserId(user.UserId).Count
+            }).ToList();
         }
 
         public long AddTaskToDb(TaskModel taskViewModel, int userId)
@@ -225,7 +208,7 @@ namespace Server.Managers
             }
             catch
             {
-                DeleteTaskFromBd(addedTaskId);
+                DeleteTaskFromDb(addedTaskId);
                 JobScheduler.DeleteJob(addedTaskId.ToString());
                 return "Возникла ошибка при добавлении задачи";
             }
@@ -233,7 +216,8 @@ namespace Server.Managers
 
         public void DeleteTask(int taskId)
         {
-            DeleteTaskFromBd(taskId);
+            DeleteTaskFromDb(taskId);
+            JobScheduler.DeleteJob(taskId.ToString());
         }
 
         public T GetFilteredData<T>(string queryString, string filterColumn, string filterParameterValue) where T: class
@@ -292,11 +276,11 @@ namespace Server.Managers
                         PeriodicityMin = task.PeriodicityMin,
                         StartTask = task.StartTask
                     };
-                    if(apiInfo.ApiId == 2)
+                    if(apiInfo.ApiId == (int)ApiesId.ApiWeather)
                         JobScheduler.StartJob<WeatherInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if(apiInfo.ApiId == 3)
+                    if(apiInfo.ApiId == (int)ApiesId.ApiNumber)
                         JobScheduler.StartJob<NumbersInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if (apiInfo.ApiId == 4)
+                    if (apiInfo.ApiId == (int)ApiesId.ApiJoke)
                         JobScheduler.StartJob<JokeInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
                 }
             }

@@ -11,12 +11,10 @@ namespace Server.Utils
     {
         public static string GetHash(string input)
         {
-            using(SHA256 sha256= SHA256.Create())
-            {
-                byte[] sourceBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = sha256.ComputeHash(sourceBytes);
-                return BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-            }
+            using var sha256 = SHA256.Create();
+            var sourceBytes = Encoding.UTF8.GetBytes(input);
+            var hashBytes = sha256.ComputeHash(sourceBytes);
+            return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
         }
     }
 }

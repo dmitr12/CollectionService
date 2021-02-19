@@ -50,7 +50,6 @@ export class UpdateTaskComponent implements OnInit {
       this.formUpd.controls['apiId'].setValue(res.apiId);
       this.formUpd.controls['filterText'].setValue(res.filterText);
       this.formUpd.controls['startDate'].setValue(res.startTask.split(' ')[0]);
-      this.formUpd.controls['startTime'].setValue(res.startTask.split(' ')[1]);
     }, error=>{
       alert("Статусный код "+error.status)
     });

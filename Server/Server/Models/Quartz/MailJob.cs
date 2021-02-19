@@ -35,6 +35,7 @@ namespace Server.Models.Quartz
                 mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<JokeInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
             await mailSender.SendMail(mailClass);
             task.LastExecution = dt.ToString();
+            task.CountExecutions++;
             taskManager.UpdateTaskInDb(task);
             taskManager.UpdateCountCompletedUserTasks(task.UserId);
         }

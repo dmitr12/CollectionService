@@ -53,10 +53,10 @@ namespace Server.Models.Quartz
             }
         }
 
-        public static void DeleteJob(string jobKey)
+        public static void DeleteJob(string triggerKey)
         {
             scheduler = GetIntanceScheduler();
-            scheduler.UnscheduleJob(new TriggerKey(jobKey));
+            scheduler.UnscheduleJob(new TriggerKey(triggerKey));
         }
 
         private static IScheduler GetIntanceScheduler()
