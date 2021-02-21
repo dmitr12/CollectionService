@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin.component';
-import { AuthenticateGuard } from './guards/authenticate-guard';
+import { AdminAuthenticateGuard } from './guards/adminAuthenticateGuard';
+import { UserAuthenticateGuard } from './guards/userAuthenticateGuard';
 import { ApplayoutComponent } from './layouts/applayout/applayout.component';
 import { AuthlayoutComponent } from './layouts/authlayout/authlayout.component';
 import { LoginComponent } from './login/login.component';
@@ -15,10 +16,10 @@ const routes: Routes = [{
     { path: 'register', component: RegisterComponent}
   ]
 },{
-  path: '', component: ApplayoutComponent, canActivate: [AuthenticateGuard], children:[
+  path: '', component: ApplayoutComponent, children:[
     { path: '', redirectTo: 'tasks', pathMatch: 'full'},
-    { path: 'tasks', component: TasksComponent },
-    { path: 'admin', component: AdminComponent }
+    { path: 'tasks', component: TasksComponent, canActivate: [UserAuthenticateGuard] },
+    { path: 'admin', component: AdminComponent, canActivate: [AdminAuthenticateGuard] }
   ]
 }];
 
