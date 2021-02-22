@@ -59,9 +59,9 @@ namespace Server.Controllers
 
         [HttpDelete("DeleteTask/{idTask}")]
         [Authorize(Roles = "1")] //User
-        public IActionResult DeleteTask(int idTask)
+        public async Task<IActionResult> DeleteTask(int idTask)
         {
-            taskManager.DeleteTask(idTask);
+            await taskManager.DeleteTask(idTask);
             return Ok();
         }
 
@@ -78,9 +78,9 @@ namespace Server.Controllers
             User user = userManager.GetUserById(UserId);
             switch (model.ApiId)
             {
-                case (int)ApiesId.ApiWeather: return Ok(new { msg = taskManager.AddTask<WeatherInfo>(model, user) });
-                case (int)ApiesId.ApiNumber: return Ok(new { msg = taskManager.AddTask<NumbersInfo>(model, user) });
-                case (int)ApiesId.ApiJoke: return Ok(new { msg = taskManager.AddTask<JokeInfo>(model, user) });
+                case (int)ApiesId.ApiWeather: return Ok(taskManager.AddTask<WeatherInfo>(model, user));
+                case (int)ApiesId.ApiNumber: return Ok(taskManager.AddTask<NumbersInfo>(model, user));
+                case (int)ApiesId.ApiJoke: return Ok(taskManager.AddTask<JokeInfo>(model, user));
             }
             return BadRequest();
         }
@@ -92,9 +92,9 @@ namespace Server.Controllers
             User user = userManager.GetUserById(UserId);
             switch (model.ApiId)
             {
-                case (int)ApiesId.ApiWeather: return Ok(new { msg = taskManager.UpdateTask<WeatherInfo>(model, user) });
-                case (int)ApiesId.ApiNumber: return Ok(new { msg = taskManager.UpdateTask<NumbersInfo>(model, user) });
-                case (int)ApiesId.ApiJoke: return Ok(new { msg = taskManager.UpdateTask<JokeInfo>(model, user) });
+                case (int)ApiesId.ApiWeather: return Ok(taskManager.UpdateTask<WeatherInfo>(model, user));
+                case (int)ApiesId.ApiNumber: return Ok(taskManager.UpdateTask<NumbersInfo>(model, user));
+                case (int)ApiesId.ApiJoke: return Ok(taskManager.UpdateTask<JokeInfo>(model, user));
             }
             return BadRequest();
         }

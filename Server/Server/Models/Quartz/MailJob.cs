@@ -36,8 +36,8 @@ namespace Server.Models.Quartz
             await mailSender.SendMail(mailClass);
             task.LastExecution = dt.ToString();
             task.CountExecutions++;
-            taskManager.UpdateTaskInDb(task);
-            taskManager.UpdateCountCompletedUserTasks(task.UserId);
+            await taskManager.UpdateTaskInDb(task);
+            await taskManager.UpdateCountCompletedUserTasks(task.UserId);
         }
     }
 }

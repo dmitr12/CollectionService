@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MUS5hjIrapjCeLKOdPDUtaQEtOzjEnvDmdmZkO+THIM6JXUOnkXcX+GBbwUxVF0Pr2+xpouim8YvC0UTnllCOQ==",
+  "dgSpecHash": "QCIJ/oMWh8eM0NgDG7aAfIUcJYM2uXOqJ7puu3KbDphb0+SCyuMI+OPpxo4hLZOAg0e3yiPuyIz0flE0vAjzsw==",
   "success": true,
-  "projectFilePath": "C:\\CollectionService_21_02_2021\\CollectionService\\Server\\Server\\Server.csproj",
+  "projectFilePath": "C:\\CollectionService\\CollectionService\\Server\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\User\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\3.1.12\\microsoft.aspnetcore.authentication.jwtbearer.3.1.12.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

@@ -13,11 +13,13 @@ namespace Server.Utils
     {
         public static void AddDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IDbHelper, SQLiteDBHelper>();
             services.AddScoped<IGeneratorToken, GeneratorToken>();
             services.AddScoped<UserManager>();
             services.AddScoped<TaskManager>();
             services.AddScoped<ConverterCsv>();
+            services.AddScoped<PersonRepository>();
+            services.AddScoped<ApiRepository>();
+            services.AddScoped<TaskRepository>();
             services.AddScoped<IMailSender, MailSender>();
         }
     }

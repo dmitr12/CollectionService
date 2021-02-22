@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Server.DI;
 using Server.Interfaces;
 using Server.Managers;
 using Server.Models.DB_Models;
@@ -29,7 +30,7 @@ namespace Server.Controllers
         public IActionResult RegisterUser(UserRegistrationModel model)
         {
             if (ModelState.IsValid)
-                return Ok(new { msg = userManager.RegisterUser(model) });
+                return Ok(userManager.RegisterUser(model));
             return BadRequest();
         }
     }

@@ -4353,11 +4353,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\CollectionService_21_02_2021\\CollectionService\\Server\\Server\\Server.csproj",
+      "projectUniqueName": "C:\\CollectionService\\CollectionService\\Server\\Server\\Server.csproj",
       "projectName": "Server",
-      "projectPath": "C:\\CollectionService_21_02_2021\\CollectionService\\Server\\Server\\Server.csproj",
+      "projectPath": "C:\\CollectionService\\CollectionService\\Server\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\CollectionService_21_02_2021\\CollectionService\\Server\\Server\\obj\\",
+      "outputPath": "C:\\CollectionService\\CollectionService\\Server\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",

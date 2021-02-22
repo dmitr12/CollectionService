@@ -23,12 +23,9 @@ namespace Server.DI
     public class GeneratorToken : IGeneratorToken
     {
         private readonly IOptions<AuthenticateOptions> authenticateOptions;
-        private readonly IDbHelper dbHelper;
-
-        public GeneratorToken(IOptions<AuthenticateOptions> options, IDbHelper dbHelper)
+        public GeneratorToken(IOptions<AuthenticateOptions> options)
         {
             authenticateOptions = options;
-            this.dbHelper = dbHelper;
         }
 
         public string GenerateToken(User user)

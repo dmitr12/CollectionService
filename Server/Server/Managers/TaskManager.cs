@@ -23,79 +23,42 @@ namespace Server.Managers
 {
     public class TaskManager
     {
-        private readonly IDbHelper dbHelper;
         private readonly IMailSender mailSender;
         private readonly IConfiguration config;
         private readonly UserManager userManager;
         private readonly ConverterCsv converterCsv;
+        private readonly TaskRepository taskRepository;
+        private readonly ApiRepository apiRepository;
 
-        public TaskManager(IDbHelper dbHelper, IMailSender mailSender, IConfiguration config, ConverterCsv converterCsv, UserManager userManager)
+        public TaskManager(IMailSender mailSender, IConfiguration config, ConverterCsv converterCsv, UserManager userManager,
+            TaskRepository taskRepository, ApiRepository apiRepository)
         {
-            this.dbHelper = dbHelper;
             this.mailSender = mailSender;
             this.config = config;
             this.converterCsv = converterCsv;
             this.userManager = userManager;
+            this.taskRepository = taskRepository;
+            this.apiRepository = apiRepository;
         }
 
         public List<Api> GetListApi()
         {
-            try
-            {
-                return dbHelper.GetData<Api>("select * from apies", null, null).Result;
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
+            return apiRepository.GetAllItems().Result.ToList();
         }
 
         private Api GetApiInfo(int apiId)
         {
-            try
-            {
-               return dbHelper.GetData("select * from apies where apiId = @ApiId", new Api { ApiId = apiId }, new List<string> { "ApiId" }).Result[0];
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
-        }
-
-        public void DeleteTaskFromDb(int idTask)
-        {
-            try
-            {
-                dbHelper.ExecuteQuery("delete from Tasks where TaskId = @TaskId", new Job { TaskId = idTask }, new List<string> { "TaskId" });
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
+            return apiRepository.GetItemById(apiId).Result;
         }
 
         public Job GetTaskById(int idTask)
         {
-            try
-            {
-                return dbHelper.GetData("select * from Tasks where TaskId = @TaskId", new Job { TaskId = idTask }, new List<string> { "TaskId" }).Result[0];
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
-        }    
+            return taskRepository.GetItemById(idTask).Result;
+        }
 
         public List<Job> GetTasksByUserId(int userId)
         {
-            try
-            {
-                return dbHelper.GetData("select * from tasks where UserId=@UserId", new Job { UserId = userId }, new List<string> { "UserId" }).Result;
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
+            return taskRepository.GetTasksByUserId(userId).ToList();
         }
 
         public List<UserTasksInfo> GetStatistics()
@@ -109,46 +72,17 @@ namespace Server.Managers
             }).ToList();
         }
 
-        public long AddTaskToDb(TaskModel taskViewModel, int userId)
+        public async Task UpdateTaskInDb(Job task)
         {
-            try
-            {
-                string queryString = "insert into Tasks(Name, Description, StartTask, PeriodicityMin, LastExecution, FilterText, UserId, ApiId, CountExecutions) " +
-                    "values(@Name, @Description, @StartTask, @PeriodicityMin, @LastExecution, @FilterText, @UserId, @ApiId, @CountExecutions); select last_insert_rowid()";
-                Job task = new Job { Name = taskViewModel.Name, Description = taskViewModel.Description, StartTask = taskViewModel.StartTask, PeriodicityMin = taskViewModel.PeriodicityMin,
-                    LastExecution = "", FilterText = taskViewModel.FilterText, UserId = userId, ApiId = taskViewModel.ApiId, CountExecutions = 0 };
-                List<string> paramNames = new List<string>();
-                paramNames.AddRange(new string[] { "Name", "Description", "StartTask", "PeriodicityMin", "LastExecution", "FilterText", "UserId", "ApiId", "CountExecutions" });
-                return (long)dbHelper.ExecuteQuery(queryString, task, paramNames).Result;
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
+            await taskRepository.UpdateItem(task);
         }
 
-        public void UpdateTaskInDb(Job task)
+        public async Task UpdateCountCompletedUserTasks(int userId)
         {
-            try
-            {
-                string queryString = "update Tasks set Name=@Name, Description=@Description, StartTask=@StartTask, PeriodicityMin=@PeriodicityMin, LastExecution=@LastExecution, FilterText=@FilterText," +
-                " UserId=@UserId, ApiId=@ApiId, CountExecutions=@CountExecutions where TaskId=@TaskId";
-                List<string> paramNames = new List<string>();
-                paramNames.AddRange(new string[] { "Name", "Description", "StartTask", "PeriodicityMin", "LastExecution", "FilterText", "UserId", "ApiId", "CountExecutions", "TaskId" });
-                dbHelper.ExecuteQuery(queryString, task, paramNames);
-            }
-            finally
-            {
-                dbHelper.Close();
-            }
+            await userManager.InceremntUserCompletedTasks(userId);
         }
 
-        public void UpdateCountCompletedUserTasks(int userId)
-        {
-            userManager.InceremntUserCompletedTasks(userId);
-        }
-
-        public string UpdateTask<T>(TaskModel taskModel, User user)where T : class
+        public async Task<string> UpdateTask<T>(TaskModel taskModel, User user)where T : class
         {
             try
             {
@@ -156,18 +90,10 @@ namespace Server.Managers
                 T dataFromApi = GetFilteredData<T>(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
                     return "Неверный параметр фильтра";
-                UpdateTaskInDb(new Job
+                await UpdateTaskInDb(new Job
                 {
-                    TaskId = taskModel.TaskId,
-                    ApiId = taskModel.ApiId,
-                    CountExecutions = 0,
-                    Description = taskModel.Description,
-                    FilterText = taskModel.FilterText,
-                    LastExecution = "",
-                    Name = taskModel.Name,
-                    PeriodicityMin = taskModel.PeriodicityMin,
-                    StartTask = taskModel.StartTask,
-                    UserId = user.UserId
+                    TaskId = taskModel.TaskId, ApiId = taskModel.ApiId, CountExecutions = 0, Description = taskModel.Description, FilterText = taskModel.FilterText,
+                    LastExecution = "", Name = taskModel.Name, PeriodicityMin = taskModel.PeriodicityMin, StartTask = taskModel.StartTask, UserId = user.UserId
                 });
                 JobScheduler.DeleteJob(taskModel.TaskId.ToString());
                 JobScheduler.StartJob<T>(mailSender, new MailClass
@@ -186,7 +112,7 @@ namespace Server.Managers
             }
         }
 
-        public string AddTask<T>(TaskModel taskModel, User user) where T: class
+        public async Task<string> AddTask<T>(TaskModel taskModel, User user) where T: class
         {
             int addedTaskId = -1;
             try
@@ -195,7 +121,9 @@ namespace Server.Managers
                 T dataFromApi = GetFilteredData<T>(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
                     return "Неверный параметр фильтра";
-                addedTaskId = (int)AddTaskToDb(taskModel, user.UserId);
+                addedTaskId = (int)taskRepository.AddItem(new Job { ApiId = taskModel.ApiId, CountExecutions = 0, Description = taskModel.Description, 
+                    FilterText = taskModel.FilterText, LastExecution = "", Name = taskModel.Name,
+                    PeriodicityMin = taskModel.PeriodicityMin, StartTask = taskModel.StartTask, UserId = user.UserId }).Result;
                 JobScheduler.StartJob<T>(mailSender, new MailClass
                 {
                     FromMail = config.GetSection("Mail").Value,
@@ -208,15 +136,15 @@ namespace Server.Managers
             }
             catch
             {
-                DeleteTaskFromDb(addedTaskId);
+                await taskRepository.DeleteItem(addedTaskId);
                 JobScheduler.DeleteJob(addedTaskId.ToString());
                 return "Возникла ошибка при добавлении задачи";
             }
         }
 
-        public void DeleteTask(int taskId)
+        public async Task DeleteTask(int taskId)
         {
-            DeleteTaskFromDb(taskId);
+            await taskRepository.DeleteItem(taskId);
             JobScheduler.DeleteJob(taskId.ToString());
         }
 
@@ -252,41 +180,34 @@ namespace Server.Managers
 
         public void StartAllJobs()
         {
-            try
+            List<Job> tasks = taskRepository.GetAllItems().Result.ToList();
+            foreach (Job task in tasks)
             {
-                List<Job> tasks = dbHelper.GetData<Job>("select * from tasks", null, null).Result;
-                foreach(Job task in tasks)
+                Api apiInfo = GetApiInfo(task.ApiId);
+                User user = userManager.GetUserById(task.UserId);
+                MailClass mailClass = new MailClass
                 {
-                    Api apiInfo = GetApiInfo(task.ApiId);
-                    User user = userManager.GetUserById(task.UserId);
-                    MailClass mailClass = new MailClass
-                    {
-                        FromMail = config.GetSection("Mail").Value,
-                        FromMailPassword = config.GetSection("MailPassword").Value,
-                        ToMail = user.Email,
-                        Subject = "Запрос данных",
-                        Body = $"Обновленные данные"
-                    };
-                    TaskModel taskModel = new TaskModel
-                    {
-                        ApiId = task.ApiId,
-                        Description = task.Description,
-                        FilterText = task.FilterText,
-                        Name = task.Name,
-                        PeriodicityMin = task.PeriodicityMin,
-                        StartTask = task.StartTask
-                    };
-                    if(apiInfo.ApiId == (int)ApiesId.ApiWeather)
-                        JobScheduler.StartJob<WeatherInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if(apiInfo.ApiId == (int)ApiesId.ApiNumber)
-                        JobScheduler.StartJob<NumbersInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if (apiInfo.ApiId == (int)ApiesId.ApiJoke)
-                        JobScheduler.StartJob<JokeInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                }
-            }
-            finally
-            {
-                dbHelper.Close();
+                    FromMail = config.GetSection("Mail").Value,
+                    FromMailPassword = config.GetSection("MailPassword").Value,
+                    ToMail = user.Email,
+                    Subject = "Запрос данных",
+                    Body = $"Обновленные данные"
+                };
+                TaskModel taskModel = new TaskModel
+                {
+                    ApiId = task.ApiId,
+                    Description = task.Description,
+                    FilterText = task.FilterText,
+                    Name = task.Name,
+                    PeriodicityMin = task.PeriodicityMin,
+                    StartTask = task.StartTask
+                };
+                if (apiInfo.ApiId == (int)ApiesId.ApiWeather)
+                    JobScheduler.StartJob<WeatherInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
+                if (apiInfo.ApiId == (int)ApiesId.ApiNumber)
+                    JobScheduler.StartJob<NumbersInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
+                if (apiInfo.ApiId == (int)ApiesId.ApiJoke)
+                    JobScheduler.StartJob<JokeInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
             }
         }
     }
