@@ -27,17 +27,12 @@ namespace Server.Models.Quartz
             var obj = jobDataMap.Get("ObjForApi");
             DateTime dt = DateTime.Now;
             mailClass.Body = $"Данные на {dt}";
-            if(obj.GetType() == typeof(WeatherInfo))
-                mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<WeatherInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
-            else if(obj.GetType()==typeof(NumbersInfo))
-                mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<NumbersInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
-            else if (obj.GetType() == typeof(JokeInfo))
-                mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData<JokeInfo>(api.BaseUrl, api.FilterColumn, task.FilterText));
+            mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData(api.BaseUrl, api.FilterColumn, task.FilterText, obj.GetType()));
             await mailSender.SendMail(mailClass);
             task.LastExecution = dt.ToString();
             task.CountExecutions++;
-            await taskManager.UpdateTaskInDb(task);
-            await taskManager.UpdateCountCompletedUserTasks(task.UserId);
+            taskManager.UpdateTaskInDb(task);
+            taskManager.UpdateCountCompletedUserTasks(task.UserId);
         }
     }
 }

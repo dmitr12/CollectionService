@@ -34,6 +34,8 @@ namespace Server
             services.AddControllers();
             services.AddDependencies();
             services.Configure<AuthenticateOptions>(Configuration.GetSection("AuthenticateParameters"));
+            services.Configure<SmtpClientParameters>(Configuration.GetSection("SmtpClientParameters"));
+            services.Configure<ThreadCountConfiguration>(Configuration.GetSection("ThreadCountConfiguration"));
 
             var authoptions = Configuration.GetSection("AuthenticateParameters").Get<AuthenticateOptions>();
 

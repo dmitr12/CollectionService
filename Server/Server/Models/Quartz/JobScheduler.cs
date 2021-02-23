@@ -1,10 +1,13 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Quartz;
 using Quartz.Impl;
 using Server.Interfaces;
 using Server.Managers;
 using Server.Models.DB_Models;
 using Server.Models.Mail;
 using Server.Models.View_Models;
+using Server.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -24,13 +27,11 @@ namespace Server.Models.Quartz
             DateTime dt = Convert.ToDateTime(model.StartTask);
             DateTimeOffset dto;
             DateTimeOffset.TryParse(dt.ToString(), out dto);
-            IScheduler scheduler = GetIntanceScheduler();
             IJobDetail jobDetail = null;
             if(!scheduler.IsStarted)
-            await scheduler.Start();
-            TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(new JobKey("MailJob")).WithIdentity(idTask.ToString()).WithSimpleSchedule(opt =>
-             opt.WithIntervalInMinutes(model.PeriodicityMin).RepeatForever().WithMisfireHandlingInstructionFireNow());
-            if (dt.AddMinutes(10) > DateTime.Now && dt > DateTime.Now)
+                await scheduler.Start();
+            TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(new JobKey("MailJob")).WithIdentity(idTask.ToString()).WithCronSchedule(model.Periodicity);
+            if (dt > DateTime.Now)
                 triggerBuilder.StartAt(dto);
             else
                 triggerBuilder.StartNow();
@@ -55,15 +56,14 @@ namespace Server.Models.Quartz
 
         public static void DeleteJob(string triggerKey)
         {
-            scheduler = GetIntanceScheduler();
             scheduler.UnscheduleJob(new TriggerKey(triggerKey));
         }
 
-        private static IScheduler GetIntanceScheduler()
+        public static IScheduler SetIntanceScheduler(IOptions<ThreadCountConfiguration> options)
         {
             if (scheduler == null)
             {
-                NameValueCollection coutnThread = new NameValueCollection { { "quartz.threadPool.threadCount", "15" } };
+                NameValueCollection coutnThread = new NameValueCollection { { $"{options.Value.parameterName}", $"{options.Value.countThreads}" } };
                 var schedulerFactory = new StdSchedulerFactory(coutnThread);
                 scheduler = schedulerFactory.GetScheduler().Result;
                 return scheduler;

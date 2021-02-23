@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Server.Models.Quartz;
 using Server.Managers;
+using Microsoft.Extensions.Options;
+using Server.Utils;
 
 namespace Server
 {
@@ -17,6 +19,7 @@ namespace Server
         public static void Main(string[] args)
         {
             IHost host = CreateHostBuilder(args).Build();
+            JobScheduler.SetIntanceScheduler(host.Services.CreateScope().ServiceProvider.GetService<IOptions<ThreadCountConfiguration>>());
             JobScheduler.StartAllTasks(host.Services.CreateScope().ServiceProvider.GetService<TaskManager>());
             host.Run();
         }

@@ -20,7 +20,7 @@ namespace Server.Models.View_Models
         public string StartTask { get; set; }
 
         [Required]
-        public int PeriodicityMin { get; set; }
+        public string Periodicity { get; set; }
 
         [Required]
         public string FilterText { get; set; }

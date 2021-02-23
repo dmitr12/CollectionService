@@ -64,21 +64,19 @@
                 <span *ngIf="formAdd?.get('description')?.errors?.required">Заполните поле</span>
             </span>
           </div>
-          <div class="input-field">
-            <input id="periodicityMin" required type="number" formControlName="periodicityMin">
-            <label for="periodicityMin">Периодичность (мин):</label>
-            <span class="helper-text red-text" *ngIf="formAdd?.get('periodicityMin')?.invalid && formAdd?.get('periodicityMin')?.dirty">
-                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.required">Заполните поле</span>
-                <span *ngIf="formAdd?.get('periodicityMin')?.errors?.min">Минимум 2 минуты</span>
-            </span>
-          </div>
         </div>
+      <div>
+        <div class="input-field">
+          <input id="periodicity" type="text" disabled [value]="formAdd.value.periodicityMin">
+          <label class="active" for="periodicity">Периодичность:</label>
+        </div>
+        <cron-editor [cron]="formStr" [options]="cronOptions" formControlName="periodicityMin"></cron-editor>
+      </div>
         <div class="center-align">
           <button class="btn waves-effect waves-light" [disabled]='formAdd?.invalid' style="background-color: #11d62b; margin-right: 20px;">Добавить</button>
           <button mat-dialog-close="false" class="btn waves-effect waves-light" style="background-color: #fa053e;">Отмена</button>
         </div>
-      </form>  
+      </form>
 </mat-dialog-content>
 
 
-   

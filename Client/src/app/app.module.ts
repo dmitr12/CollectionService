@@ -22,6 +22,7 @@ import {DatePipe} from '@angular/common';
 import { DeleteTaskComponent } from './tasks/delete-task/delete-task.component';
 import { UpdateTaskComponent } from './tasks/update-task/update-task.component';
 import { AdminComponent } from './admin/admin.component';
+import { CronEditorModule } from 'ngx-cron-editor';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { AdminComponent } from './admin/admin.component';
     MatDialogModule,
     MatSelectModule,
     NgxMaterialTimepickerModule,
+    CronEditorModule,
     HttpClientModule,
     JwtModule.forRoot({
       config:{

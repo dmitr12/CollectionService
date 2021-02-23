@@ -1,5 +1,7 @@
-﻿using Server.Interfaces;
+﻿using Microsoft.Extensions.Options;
+using Server.Interfaces;
 using Server.Models.Mail;
+using Server.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +16,14 @@ namespace Server.DI
 {
     public class MailSender : IMailSender
     {
+
+        private readonly IOptions<SmtpClientParameters> smtpClientParameters;
+
+        public MailSender(IOptions<SmtpClientParameters> options)
+        {
+            smtpClientParameters = options;
+        }
+
         public async Task SendMail(MailClass mailClass)
         {
             using(MailMessage message = new MailMessage())
@@ -31,7 +41,7 @@ namespace Server.DI
                     Attachment att = new Attachment(stream, "data.csv");
                     message.Attachments.Add(att);
                 }
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                using (SmtpClient smtp = new SmtpClient(smtpClientParameters.Value.Host, smtpClientParameters.Value.Port))
                 {
                     smtp.Credentials = new NetworkCredential(mailClass.FromMail, mailClass.FromMailPassword);
                     smtp.EnableSsl = true;

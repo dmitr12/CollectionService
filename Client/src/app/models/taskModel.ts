@@ -1,11 +1,11 @@
 export class TaskModel{
 
-    constructor(name: string, description: string,startTask: string, periodicityMin: number, filterText: string, apiId: number,
+    constructor(name: string, description: string,startTask: string, periodicity: string, filterText: string, apiId: number,
         taskId: number, lastExecution: string, userId: number, countExecutions: number){
         this.name=name;
         this.description=description;
         this.startTask=startTask;
-        this.periodicityMin=periodicityMin;
+        this.periodicity=periodicity;
         this.filterText=filterText;
         this.apiId=apiId;
         this.taskId=taskId;
@@ -21,7 +21,7 @@ export class TaskModel{
     name: string;
     description: string;
     startTask: string;
-    periodicityMin: number;
+    periodicity: string;
     filterText: string;
     apiId: number;
 }

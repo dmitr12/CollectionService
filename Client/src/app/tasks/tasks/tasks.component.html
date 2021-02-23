@@ -13,7 +13,7 @@
           <tr>
               <th>Название</th>
               <th>Описание</th>
-              <th>Периодичность (мин)</th>
+              <th>Периодичность</th>
               <th>Последнее выполнение</th>
               <th></th>
           </tr>
@@ -22,7 +22,7 @@
           <tr *ngFor="let task of tasks">
               <td>{{task.name}}</td>
               <td>{{task.description}}</td>
-              <td>{{task.periodicityMin}}</td>
+              <td>{{task.periodicity}}</td>
               <td>{{task.lastExecution}}</td>
               <td>
                 <span class="material-icons btn-item" (click)="editTask(task.taskId)">edit</span>

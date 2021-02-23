@@ -13,18 +13,18 @@ namespace Server.Utils
     {
         public StringBuilder ConvertToCsv<T>(T obj)
         {
-            if (typeof(T) == typeof(WeatherInfo))
+            if (obj.GetType().Name == "WeatherInfo")
             {
                 if (obj is WeatherInfo wi)
                     return GetStringCsv(new WeatherCSV { Name = wi.Name, Humidity = wi.Main.Humidity, Temp = wi.Main.Temp, WindSpeed = wi.Wind.Speed },
                     new List<string> { "Name", "Humidity", "Temp", "WindSpeed" });
             }
-            else if (typeof(T) == typeof(NumbersInfo))
+            else if (obj.GetType().Name == "NumbersInfo")
             {
                 if (obj is NumbersInfo ni)
                     return GetStringCsv(new NumbersInfo { Number = ni.Number, Text = ni.Text }, new List<string> { "Number", "Text" });
             }
-            else if (typeof(T) == typeof(JokeInfo))
+            else if (obj.GetType().Name == "JokeInfo")
             {
                 if (obj is JokeInfo ji)
                     return GetStringCsv(new JokeInfo { Category = ji.Category, Joke = ji.Joke }, new List<string> { "Category", "Joke" });

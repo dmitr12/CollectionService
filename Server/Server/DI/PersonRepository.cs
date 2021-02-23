@@ -18,7 +18,7 @@ namespace Server.DI
 
         protected override void AddItemParameters(User user, SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText = "insert into users(username, email, password, roleid, countcompletedtasks) " +
+            sqliteCommand.CommandText = "insert into users([username], [email], [password], [roleid], [countcompletedtasks]) " +
                 "values(@UserName, @Email, @Password, @RoleId, @CountCompletedTasks); select last_insert_rowid()";
             sqliteCommand.Parameters.AddWithValue("UserName", user.UserName);
             sqliteCommand.Parameters.AddWithValue("Email", user.Email);
@@ -29,14 +29,14 @@ namespace Server.DI
 
         protected override void DeleteItemParameters(int id, SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText = "delete from users where UserId=@UserId";
+            sqliteCommand.CommandText = "delete from users where [UserId]=@UserId";
             sqliteCommand.Parameters.AddWithValue("@UserId", id);
         }
 
         protected override void UpdateItemParameters(User user, SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText = "update users set UserName=@UserName, Email=@Email, Password=@Password," +
-                " RoleId=@RoleId, CountCompletedTasks=@CountCompletedTasks where userId=@UserId";
+            sqliteCommand.CommandText = "update users set [UserName]=@UserName, [Email]=@Email, [Password]=@Password," +
+                " [RoleId]=@RoleId, [CountCompletedTasks]=@CountCompletedTasks where userId=@UserId";
             sqliteCommand.Parameters.AddWithValue("UserId",Convert.ToInt64(user.UserId));
             sqliteCommand.Parameters.AddWithValue("UserName", user.UserName);
             sqliteCommand.Parameters.AddWithValue("Email", user.Email);
@@ -68,12 +68,12 @@ namespace Server.DI
 
         protected override void SelectItemsParameteres(SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText = "select UserId, UserName, Email, Password, RoleId, CountCompletedTasks from users";
+            sqliteCommand.CommandText = "select [UserId], [UserName], [Email], [Password], [RoleId], [CountCompletedTasks] from users";
         }
 
         protected override void SelectItemParameteres(SqliteCommand sqliteCommand, int id)
         {
-            sqliteCommand.CommandText = "select UserId, UserName, Email, Password, RoleId, CountCompletedTasks from users where UserId=@UserId";
+            sqliteCommand.CommandText = "select [UserId], [UserName], [Email], [Password], [RoleId], [CountCompletedTasks] from users where UserId=@UserId";
             sqliteCommand.Parameters.AddWithValue("UserId", Convert.ToInt64(id));
         }
 

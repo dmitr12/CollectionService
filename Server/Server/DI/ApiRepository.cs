@@ -14,7 +14,7 @@ namespace Server.DI
 
         protected override void SelectItemParameteres(SqliteCommand sqliteCommand, int id)
         {
-            sqliteCommand.CommandText = "select ApiId, ApiName, BaseUrl, FilterColumn from apies where ApiId=@ApiId";
+            sqliteCommand.CommandText = "select [ApiId], [ApiName], [BaseUrl], [FilterColumn] from apies where ApiId=@ApiId";
             sqliteCommand.Parameters.AddWithValue("ApiId", Convert.ToInt64(id));
         }
 
@@ -39,7 +39,7 @@ namespace Server.DI
 
         protected override void SelectItemsParameteres(SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText = "select ApiId, ApiName, BaseUrl, FilterColumn from apies";
+            sqliteCommand.CommandText = "select [ApiId], [ApiName], [BaseUrl], [FilterColumn] from apies";
         }
 
         protected override async Task<IEnumerable<Api>> GetListItems(SqliteDataReader reader)
