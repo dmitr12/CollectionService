@@ -38,10 +38,11 @@ namespace Server.Utils
             var sb = new StringBuilder();
             var heads = new StringBuilder();
             var values = new StringBuilder();
+            char seporator = '|';
             foreach (string prop in properties)
             {
-                heads.Append($"{prop}|");
-                values.Append($"{type.GetProperty(prop)?.GetValue(obj)}|");
+                heads.Append($"{prop}{seporator}");
+                values.Append($"{type.GetProperty(prop)?.GetValue(obj)}{seporator}");
             }
             sb.AppendLine(heads.Remove(heads.Length - 1, 1).ToString());
             sb.AppendLine(values.Remove(values.Length - 1, 1).ToString());

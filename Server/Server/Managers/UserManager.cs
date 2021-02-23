@@ -15,6 +15,7 @@ namespace Server.Managers
         private readonly PersonRepository personRepository;
         private readonly IGeneratorToken generatorToken;
 
+
         public UserManager(IGeneratorToken generatorToken, PersonRepository personRepository)
         {
             this.generatorToken = generatorToken;

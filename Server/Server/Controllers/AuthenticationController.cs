@@ -10,6 +10,10 @@ using Server.Models.View_Models;
 using Microsoft.AspNetCore.Authorization;
 using Server.Utils;
 using Server.Managers;
+using System.Reflection;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Server.Controllers
 {
@@ -18,7 +22,6 @@ namespace Server.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager userManager;
-
         public AuthenticationController(UserManager userManager)
         {
             this.userManager = userManager;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using NLog;
 using Server.Interfaces;
 using Server.Models.Mail;
 using Server.Utils;
@@ -18,6 +19,7 @@ namespace Server.DI
     {
 
         private readonly IOptions<SmtpClientParameters> smtpClientParameters;
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         public MailSender(IOptions<SmtpClientParameters> options)
         {
@@ -26,28 +28,36 @@ namespace Server.DI
 
         public async Task SendMail(MailClass mailClass)
         {
-            using(MailMessage message = new MailMessage())
+            try
             {
-                message.From = new MailAddress(mailClass.FromMail);
-                message.To.Add(new MailAddress(mailClass.ToMail));
-                message.Subject = mailClass.Subject;
-                message.Body = mailClass.Body;
-                if (mailClass.Attachment != null){
-                    MemoryStream stream = new MemoryStream();
-                    StreamWriter writer = new StreamWriter(stream);
-                    writer.Write(mailClass.Attachment.ToString());
-                    writer.Flush();
-                    stream.Position = 0;
-                    Attachment att = new Attachment(stream, "data.csv");
-                    message.Attachments.Add(att);
-                }
-                using (SmtpClient smtp = new SmtpClient(smtpClientParameters.Value.Host, smtpClientParameters.Value.Port))
+                using (MailMessage message = new MailMessage())
                 {
-                    smtp.Credentials = new NetworkCredential(mailClass.FromMail, mailClass.FromMailPassword);
-                    smtp.EnableSsl = true;
-                    await smtp.SendMailAsync(message);
+                    message.From = new MailAddress(mailClass.FromMail);
+                    message.To.Add(new MailAddress(mailClass.ToMail));
+                    message.Subject = mailClass.Subject;
+                    message.Body = mailClass.Body;
+                    if (mailClass.Attachment != null)
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        StreamWriter writer = new StreamWriter(stream);
+                        writer.Write(mailClass.Attachment.ToString());
+                        writer.Flush();
+                        stream.Position = 0;
+                        Attachment att = new Attachment(stream, "data.csv");
+                        message.Attachments.Add(att);
+                    }
+                    using (SmtpClient smtp = new SmtpClient(smtpClientParameters.Value.Host, smtpClientParameters.Value.Port))
+                    {
+                        smtp.Credentials = new NetworkCredential(mailClass.FromMail, mailClass.FromMailPassword);
+                        smtp.EnableSsl = true;
+                        await smtp.SendMailAsync(message);
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
+            }         
         }
     }
 }

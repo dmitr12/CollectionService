@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NLog;
 using Server.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ namespace Server.DI
     public class BaseRepository<T> : IRepository<T> where T : class
     {
         private readonly SqliteConnection con;
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         public BaseRepository(IConfiguration config)
         {
@@ -31,6 +34,10 @@ namespace Server.DI
                     addedId = (long)result;
                 }
             }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
             finally
             {
                 await con.CloseAsync();
@@ -48,6 +55,10 @@ namespace Server.DI
                     DeleteItemParameters(id, command);
                     await command.ExecuteNonQueryAsync();
                 }
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
             }
             finally
             {
@@ -69,6 +80,11 @@ namespace Server.DI
                     }
                 }
             }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
+                return null;
+            }
             finally
             {
                 await con.CloseAsync();
@@ -86,6 +102,10 @@ namespace Server.DI
                     UpdateItemParameters(item, command);
                     await command.ExecuteNonQueryAsync();
                 }
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
             }
             finally
             {
@@ -106,6 +126,11 @@ namespace Server.DI
                         return GetItem(reader).Result ;
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex.Message);
+                return null;
             }
             finally
             {

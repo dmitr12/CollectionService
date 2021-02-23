@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using NLog;
 using Quartz;
 using Quartz.Impl;
 using Server.Interfaces;
@@ -20,38 +21,46 @@ namespace Server.Models.Quartz
     {
 
         private static IScheduler scheduler = null;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         public static async void StartJob<T>(IMailSender mailSender, MailClass mailClass, TaskModel model, int idTask, TaskManager taskManager, Server.Models.DB_Models.Api api) where T:class
         {
-            T obj = Activator.CreateInstance<T>();
-            DateTime dt = Convert.ToDateTime(model.StartTask);
-            DateTimeOffset dto;
-            DateTimeOffset.TryParse(dt.ToString(), out dto);
-            IJobDetail jobDetail = null;
-            if(!scheduler.IsStarted)
-                await scheduler.Start();
-            TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(new JobKey("MailJob")).WithIdentity(idTask.ToString()).WithCronSchedule(model.Periodicity);
-            if (dt > DateTime.Now)
-                triggerBuilder.StartAt(dto);
-            else
-                triggerBuilder.StartNow();
-            ITrigger trigger = triggerBuilder.Build();
-            trigger.JobDataMap["MailSender"] = mailSender;
-            trigger.JobDataMap["MailClass"] = mailClass;
-            trigger.JobDataMap["TaskId"] = idTask;
-            trigger.JobDataMap["TaskManager"] = taskManager;
-            trigger.JobDataMap["ObjForApi"] = obj;
-            trigger.JobDataMap["Api"] = api;
-            jobDetail = scheduler.GetJobDetail(new JobKey("MailJob")).Result;
-            if (jobDetail==null)
+            try
             {
-                jobDetail = JobBuilder.Create<MailJob>().WithIdentity("MailJob").Build();
-                await scheduler.ScheduleJob(jobDetail, trigger);
+                T obj = Activator.CreateInstance<T>();
+                DateTime dt = Convert.ToDateTime(model.StartTask);
+                DateTimeOffset dto;
+                DateTimeOffset.TryParse(dt.ToString(), out dto);
+                IJobDetail jobDetail = null;
+                if (!scheduler.IsStarted)
+                    await scheduler.Start();
+                TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(new JobKey("MailJob")).WithIdentity(idTask.ToString()).WithCronSchedule(model.Periodicity);
+                if (dt > DateTime.Now)
+                    triggerBuilder.StartAt(dto);
+                else
+                    triggerBuilder.StartNow();
+                ITrigger trigger = triggerBuilder.Build();
+                trigger.JobDataMap["MailSender"] = mailSender;
+                trigger.JobDataMap["MailClass"] = mailClass;
+                trigger.JobDataMap["TaskId"] = idTask;
+                trigger.JobDataMap["TaskManager"] = taskManager;
+                trigger.JobDataMap["ObjForApi"] = obj;
+                trigger.JobDataMap["Api"] = api;
+                jobDetail = scheduler.GetJobDetail(new JobKey("MailJob")).Result;
+                if (jobDetail == null)
+                {
+                    jobDetail = JobBuilder.Create<MailJob>().WithIdentity("MailJob").Build();
+                    await scheduler.ScheduleJob(jobDetail, trigger);
+                }
+                else
+                {
+                    await scheduler.ScheduleJob(trigger);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                await scheduler.ScheduleJob(trigger);
-            }
+                logger.Error(ex.Message);
+            }         
         }
 
         public static void DeleteJob(string triggerKey)

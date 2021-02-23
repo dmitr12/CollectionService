@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using NLog;
 using Server.Interfaces;
 using Server.Models.DB_Models;
 using Server.Models.View_Models;
@@ -13,7 +14,6 @@ namespace Server.DI
 {
     public class PersonRepository : BaseRepository<User>, IPersonRepository
     {
-
         public PersonRepository(IConfiguration config) : base(config) { }
 
         protected override void AddItemParameters(User user, SqliteCommand sqliteCommand)

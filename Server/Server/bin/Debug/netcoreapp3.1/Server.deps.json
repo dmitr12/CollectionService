@@ -27,6 +27,7 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "3.1.12",
           "Microsoft.Data.Sqlite.Core": "5.0.3",
           "Microsoft.IdentityModel.Tokens": "6.8.0",
+          "NLog": "4.7.7",
           "Quartz": "3.2.4",
           "RestSharp": "106.11.7",
           "System.IdentityModel.Tokens.Jwt": "6.8.0",
@@ -457,6 +458,17 @@
         },
         "compile": {
           "lib/netstandard1.3/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NLog/4.7.7": {
+        "runtime": {
+          "lib/netstandard2.0/NLog.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.7.7.12472"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/NLog.dll": {}
         }
       },
       "Quartz/3.2.4": {
@@ -2821,6 +2833,13 @@
       "sha512": "sha512-ebWzW9j2nwxQeBo59As2TYn7nYr9BHicqqCwHOD1Vdo+50HBtLPuqdiCYJcLdTRknpYis/DSEOQz5KmZxwrIAg==",
       "path": "newtonsoft.json/10.0.1",
       "hashPath": "newtonsoft.json.10.0.1.nupkg.sha512"
+    },
+    "NLog/4.7.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lCfAaKel4trne8Suf4/0aR9YPKDFLWKgqBupnHKNYx+cIjutF2BsVxfF2fAb+ObaYN3m5hDjx/ToVS15ouB+SA==",
+      "path": "nlog/4.7.7",
+      "hashPath": "nlog.4.7.7.nupkg.sha512"
     },
     "Quartz/3.2.4": {
       "type": "package",

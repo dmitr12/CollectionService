@@ -182,6 +182,15 @@
           "lib/netstandard1.3/Newtonsoft.Json.dll": {}
         }
       },
+      "NLog/4.7.7": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NLog.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/NLog.dll": {}
+        }
+      },
       "Quartz/3.2.4": {
         "type": "package",
         "dependencies": {
@@ -1395,6 +1404,39 @@
         "newtonsoft.json.10.0.1.nupkg.sha512",
         "newtonsoft.json.nuspec",
         "tools/install.ps1"
+      ]
+    },
+    "NLog/4.7.7": {
+      "sha512": "lCfAaKel4trne8Suf4/0aR9YPKDFLWKgqBupnHKNYx+cIjutF2BsVxfF2fAb+ObaYN3m5hDjx/ToVS15ouB+SA==",
+      "type": "package",
+      "path": "nlog/4.7.7",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/monoandroid44/NLog.dll",
+        "lib/monoandroid44/NLog.xml",
+        "lib/net35/NLog.dll",
+        "lib/net35/NLog.xml",
+        "lib/net40-client/NLog.dll",
+        "lib/net40-client/NLog.xml",
+        "lib/net45/NLog.dll",
+        "lib/net45/NLog.xml",
+        "lib/netstandard1.3/NLog.dll",
+        "lib/netstandard1.3/NLog.xml",
+        "lib/netstandard1.5/NLog.dll",
+        "lib/netstandard1.5/NLog.xml",
+        "lib/netstandard2.0/NLog.dll",
+        "lib/netstandard2.0/NLog.xml",
+        "lib/sl4/NLog.dll",
+        "lib/sl4/NLog.xml",
+        "lib/sl5/NLog.dll",
+        "lib/sl5/NLog.xml",
+        "lib/wp8/NLog.dll",
+        "lib/wp8/NLog.xml",
+        "lib/xamarinios10/NLog.dll",
+        "lib/xamarinios10/NLog.xml",
+        "nlog.4.7.7.nupkg.sha512",
+        "nlog.nuspec"
       ]
     },
     "Quartz/3.2.4": {
@@ -4341,6 +4383,7 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 3.1.12",
       "Microsoft.Data.Sqlite.Core >= 5.0.3",
       "Microsoft.IdentityModel.Tokens >= 6.8.0",
+      "NLog >= 4.7.7",
       "Quartz >= 3.2.4",
       "RestSharp >= 106.11.7",
       "System.IdentityModel.Tokens.Jwt >= 6.8.0",
@@ -4395,6 +4438,10 @@
           "Microsoft.IdentityModel.Tokens": {
             "target": "Package",
             "version": "[6.8.0, )"
+          },
+          "NLog": {
+            "target": "Package",
+            "version": "[4.7.7, )"
           },
           "Quartz": {
             "target": "Package",
