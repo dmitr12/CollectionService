@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using Quartz;
 using Server.Interfaces;
 using Server.Managers;
@@ -18,22 +19,34 @@ namespace Server.Models.Quartz
     {
 
         private Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly IServiceScopeFactory serviceScopeFactory;
+        private IMailSender mailSender;
+        private TaskManager taskManager;
+        private BaseApiManager apiManager;
+
+        public MailJob(IServiceScopeFactory serviceScopeFactory)
+        {
+            this.serviceScopeFactory = serviceScopeFactory;
+        }
 
         public async Task Execute(IJobExecutionContext context)
         {
             try
             {
                 JobDataMap jobDataMap = context.Trigger.JobDataMap;
-                IMailSender mailSender = (IMailSender)jobDataMap.Get("MailSender");
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    mailSender = scope.ServiceProvider.GetService<IMailSender>();
+                    taskManager = scope.ServiceProvider.GetService<TaskManager>();
+                    apiManager = scope.ServiceProvider.GetService<BaseApiManager>();
+                }
                 MailClass mailClass = (MailClass)jobDataMap.Get("MailClass");
-                TaskManager taskManager = (TaskManager)jobDataMap.Get("TaskManager");
                 var api = (Server.Models.DB_Models.Api)jobDataMap.Get("Api");
                 int taskId = jobDataMap.GetInt("TaskId");
                 Job task = taskManager.GetTaskById(taskId);
-                var obj = jobDataMap.Get("ObjForApi");
                 DateTime dt = DateTime.Now;
                 mailClass.Body = $"Данные на {dt}";
-                mailClass.Attachment = taskManager.GetStringForCsv(taskManager.GetFilteredData(api.BaseUrl, api.FilterColumn, task.FilterText, obj.GetType()));
+                mailClass.Attachment = taskManager.GetStringForCsv(apiManager.GetApiManager(api.ApiId).GetFilteredData(api.BaseUrl, api.FilterColumn, task.FilterText));
                 await mailSender.SendMail(mailClass);
                 task.LastExecution = dt.ToString();
                 task.CountExecutions++;

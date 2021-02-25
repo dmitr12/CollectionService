@@ -13,36 +13,36 @@ namespace Server.Utils
     {
         public StringBuilder ConvertToCsv<T>(T obj)
         {
-            if (obj.GetType().Name == "WeatherInfo")
-            {
-                if (obj is WeatherInfo wi)
-                    return GetStringCsv(new WeatherCSV { Name = wi.Name, Humidity = wi.Main.Humidity, Temp = wi.Main.Temp, WindSpeed = wi.Wind.Speed },
-                    new List<string> { "Name", "Humidity", "Temp", "WindSpeed" });
-            }
-            else if (obj.GetType().Name == "NumbersInfo")
-            {
-                if (obj is NumbersInfo ni)
-                    return GetStringCsv(new NumbersInfo { Number = ni.Number, Text = ni.Text }, new List<string> { "Number", "Text" });
-            }
-            else if (obj.GetType().Name == "JokeInfo")
-            {
-                if (obj is JokeInfo ji)
-                    return GetStringCsv(new JokeInfo { Category = ji.Category, Joke = ji.Joke }, new List<string> { "Category", "Joke" });
-            }
-            return null;
+            return GetStringCsv(ObjectToDictionary(obj, obj.GetType()));
         }
 
-        private StringBuilder GetStringCsv<T>(T obj, List<string> properties)
+        private Dictionary<string, string> ObjectToDictionary<T>(T obj, Type t)
         {
-            var type = typeof(T);
+            var dict = new Dictionary<string, string>();
+            foreach (var v in t.GetProperties())
+            {
+                if (v.PropertyType.IsPrimitive || v.PropertyType == typeof(string))
+                    dict.Add(v.Name, t.GetProperty($"{v.Name}").GetValue(obj).ToString());
+                else
+                {
+                    var returnedDict = ObjectToDictionary(t.GetProperty($"{v.Name}").GetValue(obj), v.PropertyType);
+                    foreach (var item in returnedDict)
+                        dict.Add(item.Key, item.Value);
+                }
+            }
+            return dict;
+        }
+
+        private StringBuilder GetStringCsv(Dictionary<string,string> valuePairs)
+        {
             var sb = new StringBuilder();
             var heads = new StringBuilder();
             var values = new StringBuilder();
             char seporator = ',';
-            foreach (string prop in properties)
+            foreach (var item in valuePairs.Reverse())
             {
-                heads.Append($"{prop}{seporator}");
-                values.Append($"\"{type.GetProperty(prop)?.GetValue(obj)}\"{seporator}");
+                heads.Append($"{item.Key}{seporator}");
+                values.Append($"\"{item.Value}\"{seporator}");
             }
             sb.AppendLine(heads.Remove(heads.Length - 1, 1).ToString());
             sb.AppendLine(values.Remove(values.Length - 1, 1).ToString());

@@ -6,7 +6,7 @@ export class TokenMessage{
 export class Token{
     sub: number = 0;
     email: string = '';
-    login: string = '';
+    unique_name: string = '';
     role: number = 0;
     nbf: number = 0;
     exp: number = 0;

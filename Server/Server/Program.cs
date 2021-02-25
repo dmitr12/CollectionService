@@ -19,8 +19,9 @@ namespace Server
         public static void Main(string[] args)
         {
             IHost host = CreateHostBuilder(args).Build();
-            JobScheduler.SetIntanceScheduler(host.Services.CreateScope().ServiceProvider.GetService<IOptions<ThreadCountConfiguration>>());
-            JobScheduler.StartAllTasks(host.Services.CreateScope().ServiceProvider.GetService<TaskManager>());
+            var serviceProvider = host.Services.CreateScope().ServiceProvider;
+            JobScheduler.StartAllTasks(serviceProvider.GetService<TaskManager>(), serviceProvider.GetService<IOptions<ThreadCountConfiguration>>(),
+                serviceProvider.GetService<JobFactory>());
             host.Run();
         }
 

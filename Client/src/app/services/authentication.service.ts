@@ -34,7 +34,7 @@ export class AuthenticationService {
   }
 
   getCurrentUserName() {
-    return jwt_decode<Token>(localStorage.getItem(TOKEN)!).login;
+    return jwt_decode<Token>(localStorage.getItem(TOKEN)!).unique_name;
   }
 
   getCurrentUserId() {

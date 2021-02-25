@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Server.DI;
 using Server.Interfaces;
@@ -27,13 +30,15 @@ namespace Server.Controllers
     {
         private readonly TaskManager taskManager;
         private readonly UserManager userManager;
+        private readonly BaseApiManager baseApiManager;
 
         private int UserId => int.Parse(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
 
-        public TaskController(TaskManager taskManager, UserManager userManager)
+        public TaskController(TaskManager taskManager, UserManager userManager, BaseApiManager baseApiManager)
         {
             this.taskManager = taskManager;
             this.userManager = userManager;
+            this.baseApiManager = baseApiManager;
         }
 
         [HttpGet("GetTasksByUserId/{userId}")]
@@ -68,7 +73,7 @@ namespace Server.Controllers
         [HttpGet("Apies")]
         public IActionResult GetAllApies()
         {
-            return Ok(taskManager.GetListApi());
+            return Ok(baseApiManager.GetListApi());
         }
 
         [HttpPost("AddTask")]
@@ -76,13 +81,7 @@ namespace Server.Controllers
         public IActionResult AddTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            switch (model.ApiId)
-            {
-                case (int)ApiesId.ApiWeather: return Ok(taskManager.AddTask<WeatherInfo>(model, user));
-                case (int)ApiesId.ApiNumber: return Ok(taskManager.AddTask<NumbersInfo>(model, user));
-                case (int)ApiesId.ApiJoke: return Ok(taskManager.AddTask<JokeInfo>(model, user));
-            }
-            return BadRequest();
+            return Ok(taskManager.AddTask(model, user));
         }
 
         [HttpPut("UpdateTask")]
@@ -90,13 +89,7 @@ namespace Server.Controllers
         public IActionResult UpdateTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            switch (model.ApiId)
-            {
-                case (int)ApiesId.ApiWeather: return Ok(taskManager.UpdateTask<WeatherInfo>(model, user));
-                case (int)ApiesId.ApiNumber: return Ok(taskManager.UpdateTask<NumbersInfo>(model, user));
-                case (int)ApiesId.ApiJoke: return Ok(taskManager.UpdateTask<JokeInfo>(model, user));
-            }
-            return BadRequest();
+            return Ok(taskManager.UpdateTask(model, user));
         }
     }
 }

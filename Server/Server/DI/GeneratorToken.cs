@@ -12,17 +12,10 @@ using System.Threading.Tasks;
 
 namespace Server.DI
 {
-
-    public enum ApiesId
-    {
-        ApiWeather=2,
-        ApiNumber=3,
-        ApiJoke=4
-    }
-
     public class GeneratorToken : IGeneratorToken
     {
         private readonly IOptions<AuthenticateOptions> authenticateOptions;
+        private const string claimRole = "role";
         public GeneratorToken(IOptions<AuthenticateOptions> options)
         {
             authenticateOptions = options;
@@ -37,9 +30,9 @@ namespace Server.DI
                 {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("login", user.UserName),
-                new Claim("role", user.RoleId.ToString())
-        };
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                new Claim(claimRole, user.RoleId.ToString())
+            };
             var token = new JwtSecurityToken(claims: claims, notBefore: DateTime.Now, expires: DateTime.Now.AddSeconds(authenticateParameters.TokenLifeTime),
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);

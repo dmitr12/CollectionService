@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using RestSharp;
 using Server.DI;
 using Server.Interfaces;
+using Server.Models.Api;
 using Server.Models.Api.JokeApi;
 using Server.Models.Api.NumbersApi;
 using Server.Models.Api.WeatherApi;
@@ -30,10 +32,11 @@ namespace Server.Managers
         private readonly ConverterCsv converterCsv;
         private readonly TaskRepository taskRepository;
         private readonly ApiRepository apiRepository;
+        private readonly BaseApiManager baseApiManager;
         private Logger logger = LogManager.GetCurrentClassLogger();
 
         public TaskManager(IMailSender mailSender, IConfiguration config, ConverterCsv converterCsv, UserManager userManager,
-            TaskRepository taskRepository, ApiRepository apiRepository)
+            TaskRepository taskRepository, ApiRepository apiRepository, BaseApiManager baseApiManager)
         {
             this.mailSender = mailSender;
             this.config = config;
@@ -41,16 +44,7 @@ namespace Server.Managers
             this.userManager = userManager;
             this.taskRepository = taskRepository;
             this.apiRepository = apiRepository;
-        }
-
-        public List<Api> GetListApi()
-        {
-            return apiRepository.GetAllItems().Result.ToList();
-        }
-
-        private Api GetApiInfo(int apiId)
-        {
-            return apiRepository.GetItemById(apiId).Result;
+            this.baseApiManager = baseApiManager;
         }
 
         public Job GetTaskById(int idTask)
@@ -84,12 +78,13 @@ namespace Server.Managers
             await userManager.InceremntUserCompletedTasks(userId);
         }
 
-        public async Task<string> UpdateTask<T>(TaskModel taskModel, User user)where T : class
+        public async Task<string> UpdateTask(TaskModel taskModel, User user)
         {
             try
             {
-                Api apiInfo = GetApiInfo(taskModel.ApiId);
-                object dataFromApi = GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText, typeof(T));
+                var apiManager = baseApiManager.GetApiManager(taskModel.ApiId);
+                Api apiInfo = apiManager.GetApiInfo();
+                ApiBase dataFromApi = apiManager.GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
                     return "Неверный параметр фильтра";
                 await UpdateTaskInDb(new Job
@@ -98,14 +93,14 @@ namespace Server.Managers
                     LastExecution = "", Name = taskModel.Name, Periodicity = taskModel.Periodicity, StartTask = taskModel.StartTask, UserId = user.UserId
                 });
                 JobScheduler.DeleteJob(taskModel.TaskId.ToString());
-                JobScheduler.StartJob<T>(mailSender, new MailClass
+                JobScheduler.StartJob(new MailClass
                 {
                     FromMail = config.GetSection("Mail").Value,
                     FromMailPassword = config.GetSection("MailPassword").Value,
                     ToMail = user.Email,
                     Subject = "Запрос данных",
                     Body = $"Обновленные данные"
-                }, taskModel, taskModel.TaskId, this, apiInfo);
+                }, taskModel, taskModel.TaskId, apiInfo);
                 return null;
             }
             catch(Exception ex)
@@ -115,26 +110,27 @@ namespace Server.Managers
             }
         }
 
-        public async Task<string> AddTask<T>(TaskModel taskModel, User user) where T: class
+        public async Task<string> AddTask(TaskModel taskModel, User user)
         {
             int addedTaskId = -1;
             try
             {
-                Api apiInfo = GetApiInfo(taskModel.ApiId);
-                object dataFromApi = GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText, typeof(T));
+                var apiManager = baseApiManager.GetApiManager(taskModel.ApiId);
+                Api apiInfo = apiManager.GetApiInfo();
+                ApiBase dataFromApi = apiManager.GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
                     return "Неверный параметр фильтра";
                 addedTaskId = (int)taskRepository.AddItem(new Job { ApiId = taskModel.ApiId, CountExecutions = 0, Description = taskModel.Description, 
                     FilterText = taskModel.FilterText, LastExecution = "", Name = taskModel.Name,
                     Periodicity = taskModel.Periodicity, StartTask = taskModel.StartTask, UserId = user.UserId }).Result;
-                JobScheduler.StartJob<T>(mailSender, new MailClass
+                JobScheduler.StartJob(new MailClass
                 {
                     FromMail = config.GetSection("Mail").Value,
                     FromMailPassword = config.GetSection("MailPassword").Value,
                     ToMail = user.Email,
                     Subject = "Запрос данных",
                     Body = $"Обновленные данные"
-                }, taskModel, addedTaskId, this, apiInfo);
+                }, taskModel, addedTaskId, apiInfo);
                 return null;
             }
             catch(Exception ex)
@@ -152,45 +148,7 @@ namespace Server.Managers
             JobScheduler.DeleteJob(taskId.ToString());
         }
 
-        public object GetFilteredData(string queryString, string filterColumn, string filterParameterValue, Type type)
-        {
-            try
-            {
-                StringBuilder sb = new StringBuilder(queryString);
-                if (filterColumn == "/")
-                {
-                    if (queryString.Contains('?'))
-                    {
-                        int index = queryString.IndexOf('?');
-                        sb.Insert(index, $"{filterColumn}{filterParameterValue}");
-                    }
-                    else
-                        sb.Append(filterParameterValue);
-                }
-                else
-                    sb.Append($"&{filterColumn}={filterParameterValue}");
-                var client = new RestClient(sb.ToString());
-                var request = new RestRequest(Method.GET);
-                request.AddHeader("Content-Type", "application/json; charset=utf-8");
-                IRestResponse response = client.Execute(request);
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    switch (type.Name)
-                    {
-                        case "WeatherInfo": return JsonConvert.DeserializeObject<WeatherInfo>(response.Content);
-                        case "NumbersInfo": return JsonConvert.DeserializeObject<NumbersInfo>(response.Content);
-                        case "JokeInfo": return JsonConvert.DeserializeObject<JokeInfo>(response.Content);
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                logger.Error(ex.Message);
-            }
-            return null;
-        }
-
-        public StringBuilder GetStringForCsv<T>(T obj)
+        public StringBuilder GetStringForCsv(ApiBase obj)
         {
             return converterCsv.ConvertToCsv(obj);
         }
@@ -202,7 +160,8 @@ namespace Server.Managers
                 List<Job> tasks = taskRepository.GetAllItems().Result.ToList();
                 foreach (Job task in tasks)
                 {
-                    Api apiInfo = GetApiInfo(task.ApiId);
+                    var apiManager = baseApiManager.GetApiManager(task.ApiId);
+                    Api apiInfo = apiManager.GetApiInfo();
                     User user = userManager.GetUserById(task.UserId);
                     MailClass mailClass = new MailClass
                     {
@@ -221,12 +180,7 @@ namespace Server.Managers
                         Periodicity = task.Periodicity,
                         StartTask = task.StartTask
                     };
-                    if (apiInfo.ApiId == (int)ApiesId.ApiWeather)
-                        JobScheduler.StartJob<WeatherInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if (apiInfo.ApiId == (int)ApiesId.ApiNumber)
-                        JobScheduler.StartJob<NumbersInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
-                    if (apiInfo.ApiId == (int)ApiesId.ApiJoke)
-                        JobScheduler.StartJob<JokeInfo>(mailSender, mailClass, taskModel, task.TaskId, this, apiInfo);
+                    JobScheduler.StartJob(mailClass, taskModel, task.TaskId, apiInfo);
                 }
             }
             catch(Exception ex)
@@ -234,7 +188,5 @@ namespace Server.Managers
                 logger.Error(ex.Message);
             }
         }
-
-
     }
 }
