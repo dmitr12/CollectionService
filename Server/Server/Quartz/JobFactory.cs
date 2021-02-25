@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Server.Models.Quartz
+namespace Server.Quartz
 {
     public class JobFactory : IJobFactory
     {
@@ -29,7 +29,7 @@ namespace Server.Models.Quartz
 
         public void ReturnJob(IJob job)
         {
-            
+
         }
     }
 }

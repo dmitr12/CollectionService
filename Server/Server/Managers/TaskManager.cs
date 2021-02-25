@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using RestSharp;
+using Server.Converters;
 using Server.DI;
 using Server.Interfaces;
 using Server.Models.Api;
@@ -12,8 +13,8 @@ using Server.Models.Api.NumbersApi;
 using Server.Models.Api.WeatherApi;
 using Server.Models.DB_Models;
 using Server.Models.Mail;
-using Server.Models.Quartz;
 using Server.Models.View_Models;
+using Server.Quartz;
 using Server.Utils;
 using System;
 using System.Collections.Generic;
@@ -26,24 +27,20 @@ namespace Server.Managers
 {
     public class TaskManager
     {
-        private readonly IMailSender mailSender;
         private readonly IConfiguration config;
         private readonly UserManager userManager;
         private readonly ConverterCsv converterCsv;
         private readonly TaskRepository taskRepository;
-        private readonly ApiRepository apiRepository;
         private readonly BaseApiManager baseApiManager;
         private Logger logger = LogManager.GetCurrentClassLogger();
 
-        public TaskManager(IMailSender mailSender, IConfiguration config, ConverterCsv converterCsv, UserManager userManager,
-            TaskRepository taskRepository, ApiRepository apiRepository, BaseApiManager baseApiManager)
+        public TaskManager(IConfiguration config, ConverterCsv converterCsv, UserManager userManager,
+            TaskRepository taskRepository, BaseApiManager baseApiManager)
         {
-            this.mailSender = mailSender;
             this.config = config;
             this.converterCsv = converterCsv;
             this.userManager = userManager;
             this.taskRepository = taskRepository;
-            this.apiRepository = apiRepository;
             this.baseApiManager = baseApiManager;
         }
 
@@ -68,17 +65,12 @@ namespace Server.Managers
             }).ToList();
         }
 
-        public async Task UpdateTaskInDb(Job task)
+        public void UpdateTaskInDb(Job task)
         {
-            await taskRepository.UpdateItem(task);
+            taskRepository.UpdateItem(task).Wait();
         }
 
-        public async Task UpdateCountCompletedUserTasks(int userId)
-        {
-            await userManager.InceremntUserCompletedTasks(userId);
-        }
-
-        public async Task<string> UpdateTask(TaskModel taskModel, User user)
+        public IActionResult UpdateTask(TaskModel taskModel, User user)
         {
             try
             {
@@ -86,10 +78,10 @@ namespace Server.Managers
                 Api apiInfo = apiManager.GetApiInfo();
                 ApiBase dataFromApi = apiManager.GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
-                    return "Неверный параметр фильтра";
-                await UpdateTaskInDb(new Job
+                    return new StatusCodeResult(400);
+                UpdateTaskInDb(new Job
                 {
-                    TaskId = taskModel.TaskId, ApiId = taskModel.ApiId, CountExecutions = 0, Description = taskModel.Description, FilterText = taskModel.FilterText,
+                    TaskId = taskModel.TaskId, ApiId = taskModel.ApiId, Description = taskModel.Description, FilterText = taskModel.FilterText,
                     LastExecution = "", Name = taskModel.Name, Periodicity = taskModel.Periodicity, StartTask = taskModel.StartTask, UserId = user.UserId
                 });
                 JobScheduler.DeleteJob(taskModel.TaskId.ToString());
@@ -101,16 +93,16 @@ namespace Server.Managers
                     Subject = "Запрос данных",
                     Body = $"Обновленные данные"
                 }, taskModel, taskModel.TaskId, apiInfo);
-                return null;
+                return new StatusCodeResult(200);
             }
             catch(Exception ex)
             {
                 logger.Error(ex.Message);
-                return "Возникла ошибка при изменении задачи";
+                return new StatusCodeResult(500);
             }
         }
 
-        public async Task<string> AddTask(TaskModel taskModel, User user)
+        public IActionResult AddTask(TaskModel taskModel, User user)
         {
             int addedTaskId = -1;
             try
@@ -119,8 +111,8 @@ namespace Server.Managers
                 Api apiInfo = apiManager.GetApiInfo();
                 ApiBase dataFromApi = apiManager.GetFilteredData(apiInfo.BaseUrl, apiInfo.FilterColumn, taskModel.FilterText);
                 if (dataFromApi == null)
-                    return "Неверный параметр фильтра";
-                addedTaskId = (int)taskRepository.AddItem(new Job { ApiId = taskModel.ApiId, CountExecutions = 0, Description = taskModel.Description, 
+                    return new StatusCodeResult(400);
+                addedTaskId = (int)taskRepository.AddItem(new Job { ApiId = taskModel.ApiId, Description = taskModel.Description, 
                     FilterText = taskModel.FilterText, LastExecution = "", Name = taskModel.Name,
                     Periodicity = taskModel.Periodicity, StartTask = taskModel.StartTask, UserId = user.UserId }).Result;
                 JobScheduler.StartJob(new MailClass
@@ -131,20 +123,18 @@ namespace Server.Managers
                     Subject = "Запрос данных",
                     Body = $"Обновленные данные"
                 }, taskModel, addedTaskId, apiInfo);
-                return null;
+                return new StatusCodeResult(200);
             }
             catch(Exception ex)
             {
                 logger.Error(ex.Message);
-                await taskRepository.DeleteItem(addedTaskId);
-                JobScheduler.DeleteJob(addedTaskId.ToString());
-                return "Возникла ошибка при добавлении задачи";
+                return new StatusCodeResult(500);
             }
         }
 
-        public async Task DeleteTask(int taskId)
+        public void DeleteTask(int taskId)
         {
-            await taskRepository.DeleteItem(taskId);
+            taskRepository.DeleteItem(taskId).Wait();
             JobScheduler.DeleteJob(taskId.ToString());
         }
 
@@ -153,7 +143,7 @@ namespace Server.Managers
             return converterCsv.ConvertToCsv(obj);
         }
 
-        public void StartAllJobs()
+        public void StartAllTasks()
         {
             try
             {

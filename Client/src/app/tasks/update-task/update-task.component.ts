@@ -8,7 +8,7 @@ import {TaskModel} from 'src/app/models/taskModel';
 import {TaskViewModel} from 'src/app/models/taskViewModel';
 import {TaskService} from 'src/app/services/task.service';
 import {AddTaskComponent} from '../add-task/add-task.component';
-import {CronOptions} from "ngx-cron-editor";
+import {CronOptions} from 'ngx-cron-editor';
 
 @Component({
   selector: 'app-update-task',
@@ -68,34 +68,35 @@ export class UpdateTaskComponent implements OnInit {
 
     this.taskService.getTaskById(this.data).subscribe(res => {
       this.selectedTask = res;
-      this.formUpd.controls['name'].setValue(res.name);
-      this.formUpd.controls['description'].setValue(res.description);
-      this.formUpd.controls['periodicityMin'].setValue(res.periodicity);
-      this.formUpd.controls['apiId'].setValue(res.apiId);
-      this.formUpd.controls['filterText'].setValue(res.filterText);
-      this.formUpd.controls['startDate'].setValue(res.startTask.split(' ')[0]);
+      this.formUpd.controls.name.setValue(res.name);
+      this.formUpd.controls.description.setValue(res.description);
+      this.formUpd.controls.periodicityMin.setValue(res.periodicity);
+      this.formUpd.controls.apiId.setValue(res.apiId);
+      this.formUpd.controls.filterText.setValue(res.filterText);
+      this.formUpd.controls.startDate.setValue(res.startTask.split(' ')[0]);
     }, error => {
-      alert("Статусный код " + error.status)
+      alert('Статусный код ' + error.status);
     });
 
-    this.formUpd.controls['apiId'].valueChanges.subscribe(() => {
-      this.formUpd.controls['filterText'].setValue('');
+    this.formUpd.controls.apiId.valueChanges.subscribe(() => {
+      this.formUpd.controls.filterText.setValue('');
     });
   }
 
   update() {
-    var model = new TaskViewModel(this.formUpd.value.name, this.formUpd.value.description,
+    const model = new TaskViewModel(this.formUpd.value.name, this.formUpd.value.description,
       `${this.formUpd.value.startDate} ${this.formUpd.value.startTime}`, this.formUpd.value.periodicityMin,
       this.formUpd.value.filterText, this.formUpd.value.apiId);
     model.taskId = this.data;
     this.taskService.updateTask(model).subscribe((res: any) => {
-      if (!res['msg']) {
         this.dialogSource.close();
-      } else {
-        alert(res['msg'])
-      }
     }, error => {
-      alert("Статусный код " + error.status);
-    })
+      if (error.status === 400) {
+        alert('Отправлены неверные данные');
+      }
+      if (error.status === 500) {
+        alert('Возникла ошибка на сервере');
+      }
+    });
   }
 }

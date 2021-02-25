@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Server.Managers
 {
-    public class ApiManager<T>: IApiManager<T> where T: ApiBase
+    public class ApiManager<T>: IApiManager<T> where T : ApiBase
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
         private readonly ApiRepository apiRepository;

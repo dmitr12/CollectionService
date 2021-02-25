@@ -4,10 +4,10 @@ export class TokenMessage{
 }
 
 export class Token{
-    sub: number = 0;
-    email: string = '';
-    unique_name: string = '';
-    role: number = 0;
-    nbf: number = 0;
-    exp: number = 0;
+    sub = 0;
+    email = '';
+    unique_name = '';
+    role = 0;
+    nbf = 0;
+    exp = 0;
 }

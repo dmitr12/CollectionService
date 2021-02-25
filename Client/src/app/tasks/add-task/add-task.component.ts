@@ -71,13 +71,14 @@ export class AddTaskComponent implements OnInit {
     this.taskService.addTask(new TaskViewModel(this.formAdd.value.name, this.formAdd.value.description,
       `${this.formAdd.value.startDate} ${this.formAdd.value.startTime}`, this.formAdd.value.periodicityMin,
       this.formAdd.value.filterText, this.formAdd.value.apiId)).subscribe((res: any) => {
-      if (!res['msg']) {
-        this.dialogSource.close();
-      } else {
-        alert(res['msg'])
-      }
+      this.dialogSource.close();
     }, error => {
-      alert("Статусный код " + error.status);
-    })
+      if (error.status === 400) {
+        alert('Отправлены неверные данные');
+      }
+      if (error.status === 500) {
+        alert('Возникла ошибка на сервере');
+      }
+    });
   }
 }

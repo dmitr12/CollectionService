@@ -11,7 +11,6 @@ namespace Server.Interfaces
     {
         bool UserExists(string userName, string email);
         User GetUserByNameOrEmail(UserAuthenticationModel model);
-
         Task IncerementCountCompletedTasks(int userId);
     }
 }

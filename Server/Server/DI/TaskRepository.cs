@@ -15,8 +15,8 @@ namespace Server.DI
 
         protected override void AddItemParameters(Job obj, SqliteCommand sqliteCommand)
         {
-            sqliteCommand.CommandText= "insert into Tasks([Name], [Description], [StartTask], [Periodicity], [LastExecution], [FilterText], [UserId], [ApiId], [CountExecutions]) " +
-                    "values(@Name, @Description, @StartTask, @Periodicity, @LastExecution, @FilterText, @UserId, @ApiId, @CountExecutions); select last_insert_rowid()";
+            sqliteCommand.CommandText= "insert into Tasks([Name], [Description], [StartTask], [Periodicity], [LastExecution], [FilterText], [UserId], [ApiId]) " +
+                    "values(@Name, @Description, @StartTask, @Periodicity, @LastExecution, @FilterText, @UserId, @ApiId); select last_insert_rowid()";
             sqliteCommand.Parameters.AddWithValue("Name", obj.Name);
             sqliteCommand.Parameters.AddWithValue("Description", obj.Description);
             sqliteCommand.Parameters.AddWithValue("StartTask", obj.StartTask);
@@ -25,7 +25,6 @@ namespace Server.DI
             sqliteCommand.Parameters.AddWithValue("FilterText", obj.FilterText);
             sqliteCommand.Parameters.AddWithValue("UserId", Convert.ToInt64(obj.UserId));
             sqliteCommand.Parameters.AddWithValue("ApiId", Convert.ToInt64(obj.ApiId));
-            sqliteCommand.Parameters.AddWithValue("CountExecutions", Convert.ToInt64(obj.CountExecutions));
         }
 
         protected override void DeleteItemParameters(int id, SqliteCommand sqliteCommand)
@@ -37,7 +36,7 @@ namespace Server.DI
         protected override void UpdateItemParameters(Job obj, SqliteCommand sqliteCommand)
         {
             sqliteCommand.CommandText = "update Tasks set [Name]=@Name, [Description]=@Description, [StartTask]=@StartTask, [Periodicity]=@Periodicity, [LastExecution]=@LastExecution, [FilterText]=@FilterText," +
-                " [UserId]=@UserId, [ApiId]=@ApiId, [CountExecutions]=@CountExecutions where [TaskId]=@TaskId";
+                " [UserId]=@UserId, [ApiId]=@ApiId where [TaskId]=@TaskId";
             sqliteCommand.Parameters.AddWithValue("TaskId", obj.TaskId);
             sqliteCommand.Parameters.AddWithValue("Name", obj.Name);
             sqliteCommand.Parameters.AddWithValue("Description", obj.Description);
@@ -47,13 +46,12 @@ namespace Server.DI
             sqliteCommand.Parameters.AddWithValue("FilterText", obj.FilterText);
             sqliteCommand.Parameters.AddWithValue("UserId", Convert.ToInt64(obj.UserId));
             sqliteCommand.Parameters.AddWithValue("ApiId", Convert.ToInt64(obj.ApiId));
-            sqliteCommand.Parameters.AddWithValue("CountExecutions", Convert.ToInt64(obj.CountExecutions));
         }
 
         protected override void SelectItemParameteres(SqliteCommand sqliteCommand, int id)
         {
             sqliteCommand.CommandText = "select [TaskId], [Name], [Description], [StartTask], [Periodicity], [LastExecution], " +
-                "[FilterText], [UserId], [ApiId], [CountExecutions] from tasks where [TaskId]=@TaskId";
+                "[FilterText], [UserId], [ApiId] from tasks where [TaskId]=@TaskId";
             sqliteCommand.Parameters.AddWithValue("TaskId", Convert.ToInt64(id));
         }
 
@@ -74,8 +72,7 @@ namespace Server.DI
                         LastExecution = reader["LastExecution"].ToString(),
                         FilterText = reader["FilterText"].ToString(),
                         UserId = Convert.ToInt32(reader["UserId"].ToString()),
-                        ApiId = Convert.ToInt32(reader["ApiId"].ToString()),
-                        CountExecutions = Convert.ToInt32(reader["CountExecutions"].ToString())
+                        ApiId = Convert.ToInt32(reader["ApiId"].ToString())
                     };
                 }
             }
@@ -85,7 +82,7 @@ namespace Server.DI
         protected override void SelectItemsParameteres(SqliteCommand sqliteCommand)
         {
             sqliteCommand.CommandText = "select [TaskId], [Name], [Description], [StartTask], [Periodicity], [LastExecution], " +
-                "[FilterText], [UserId], [ApiId], [CountExecutions] from tasks";
+                "[FilterText], [UserId], [ApiId] from tasks";
         }
 
         protected override async Task<IEnumerable<Job>> GetListItems(SqliteDataReader reader)
@@ -105,8 +102,7 @@ namespace Server.DI
                         LastExecution = reader["LastExecution"].ToString(),
                         FilterText = reader["FilterText"].ToString(),
                         UserId = Convert.ToInt32(reader["UserId"].ToString()),
-                        ApiId = Convert.ToInt32(reader["ApiId"].ToString()),
-                        CountExecutions = Convert.ToInt32(reader["CountExecutions"].ToString())
+                        ApiId = Convert.ToInt32(reader["ApiId"].ToString())
                     });
                 }
             }

@@ -19,7 +19,6 @@ using Server.Models.Api.NumbersApi;
 using Server.Models.Api.WeatherApi;
 using Server.Models.DB_Models;
 using Server.Models.Mail;
-using Server.Models.Quartz;
 using Server.Models.View_Models;
 
 namespace Server.Controllers
@@ -64,9 +63,9 @@ namespace Server.Controllers
 
         [HttpDelete("DeleteTask/{idTask}")]
         [Authorize(Roles = "1")] //User
-        public async Task<IActionResult> DeleteTask(int idTask)
+        public IActionResult DeleteTask(int idTask)
         {
-            await taskManager.DeleteTask(idTask);
+            taskManager.DeleteTask(idTask);
             return Ok();
         }
 
@@ -81,7 +80,7 @@ namespace Server.Controllers
         public IActionResult AddTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            return Ok(taskManager.AddTask(model, user));
+            return taskManager.AddTask(model, user);
         }
 
         [HttpPut("UpdateTask")]
@@ -89,7 +88,7 @@ namespace Server.Controllers
         public IActionResult UpdateTask(TaskModel model)
         {
             User user = userManager.GetUserById(UserId);
-            return Ok(taskManager.UpdateTask(model, user));
+            return taskManager.UpdateTask(model, user);
         }
     }
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { UserRegistration } from '../models/userRegistration';
-import { RegisterService } from '../services/register.service';
+import {Component, OnInit} from '@angular/core';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {UserRegistration} from '../models/userRegistration';
+import {RegisterService} from '../services/register.service';
 
 @Component({
   selector: 'app-register',
@@ -10,7 +10,7 @@ import { RegisterService } from '../services/register.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  
+
   formRegister: FormGroup = new FormGroup({
     userName: new FormControl(null, [Validators.required, Validators.maxLength(100), this.validName]),
     email: new FormControl(null, [Validators.required, Validators.email]),
@@ -20,20 +20,21 @@ export class RegisterComponent implements OnInit {
     })
   }, this.matchingPasswords);
 
-  constructor(private registerService: RegisterService, private router: Router) { }
+  constructor(private registerService: RegisterService, private router: Router) {
+  }
 
   matchingPasswords(c: AbstractControl): ValidationErrors | null {
-    let password = c.get('passwords.password');
-    let confirmPassword = c.get('passwords.confirmPassword');
+    const password = c.get('passwords.password');
+    const confirmPassword = c.get('passwords.confirmPassword');
     if (password?.value !== confirmPassword?.value) {
-      return { custom: 'Пароли не равны' };
+      return {custom: 'Пароли не равны'};
     }
     return null;
   }
 
-  validName(c: FormControl): ValidationErrors | null{
+  validName(c: FormControl): ValidationErrors | null {
     if (c?.value?.toString().includes('@')) {
-      return { custom: 'Недопустимый символ @' };
+      return {custom: 'Недопустимый символ @'};
     }
     return null;
   }
@@ -42,18 +43,17 @@ export class RegisterComponent implements OnInit {
 
   }
 
-  register(){
+  register() {
     this.registerService.register(new UserRegistration(this.formRegister.value.userName, this.formRegister.value.email,
-      this.formRegister.value.passwords.password)).subscribe((res:any)=>{
-        if (res && res['msg']){
-          alert(res['msg'])
-        }
-        else{
-          this.router.navigate(['']);
-        }
-      }, error => {
-        alert("При отправке запроса возникла ошибка, статусный код "+error.status);
-      });
+      this.formRegister.value.passwords.password)).subscribe((res: any) => {
+      if (res.result) {
+        alert(res.result);
+      } else {
+        this.router.navigate(['']);
+      }
+    }, error => {
+      alert('При отправке запроса возникла ошибка, статусный код ' + error.status);
+    });
   }
 
 }

@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Server.Models.Quartz;
 using Server.Managers;
 using Microsoft.Extensions.Options;
 using Server.Utils;
+using Server.Quartz;
 
 namespace Server
 {

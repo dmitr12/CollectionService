@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NLog;
 using Quartz;
 using Quartz.Impl;
-using Server.Interfaces;
 using Server.Managers;
 using Server.Models.DB_Models;
 using Server.Models.Mail;
@@ -15,27 +14,21 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Server.Models.Quartz
+namespace Server.Quartz
 {
     public class JobScheduler
     {
-
         private static IScheduler scheduler = null;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static string jobName = "MailJob";
 
-        public static async void StartJob(MailClass mailClass, TaskModel model, int idTask, Server.Models.DB_Models.Api api)
+        public static async void StartJob(MailClass mailClass, TaskModel model, int idTask, Api api)
         {
             try
             {
-                DateTime dt = Convert.ToDateTime(model.StartTask);
-                DateTimeOffset dto;
-                DateTimeOffset.TryParse(dt.ToString(), out dto);
-                if (!scheduler.IsStarted)
-                    await scheduler.Start();
                 TriggerBuilder triggerBuilder = TriggerBuilder.Create().ForJob(jobName).WithIdentity(idTask.ToString()).WithCronSchedule(model.Periodicity);
-                if (dt > DateTime.Now)
-                    triggerBuilder.StartAt(dto);
+                if (DateTime.Parse(model.StartTask) > DateTime.Now)
+                    triggerBuilder.StartAt(DateTimeOffset.Parse(model.StartTask));
                 else
                     triggerBuilder.StartNow();
                 ITrigger trigger = triggerBuilder.Build();
@@ -44,10 +37,10 @@ namespace Server.Models.Quartz
                 trigger.JobDataMap["Api"] = api;
                 await scheduler.ScheduleJob(trigger);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex.Message);
-            }         
+            }
         }
 
         public static void DeleteJob(string triggerKey)
@@ -64,8 +57,7 @@ namespace Server.Models.Quartz
             await scheduler.Start();
             var mailJob = JobBuilder.Create<MailJob>().StoreDurably().WithIdentity(jobName).Build();
             await scheduler.AddJob(mailJob, true);
-
-            taskManager.StartAllJobs();
+            taskManager.StartAllTasks();
         }
     }
 }

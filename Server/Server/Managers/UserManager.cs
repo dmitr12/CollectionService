@@ -15,7 +15,6 @@ namespace Server.Managers
         private readonly PersonRepository personRepository;
         private readonly IGeneratorToken generatorToken;
 
-
         public UserManager(IGeneratorToken generatorToken, PersonRepository personRepository)
         {
             this.generatorToken = generatorToken;
@@ -48,9 +47,9 @@ namespace Server.Managers
             return null;
         }
 
-        public async Task InceremntUserCompletedTasks(int userId)
+        public void InceremntUserCompletedTasks(int userId)
         {
-            await personRepository.IncerementCountCompletedTasks(userId);
+            personRepository.IncerementCountCompletedTasks(userId).Wait();
         }
 
         public List<User> GetAllUsers()

@@ -1,13 +1,10 @@
-﻿using Server.Models.Api.JokeApi;
-using Server.Models.Api.NumbersApi;
-using Server.Models.Api.WeatherApi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Utils
+namespace Server.Converters
 {
     public class ConverterCsv
     {
@@ -33,7 +30,7 @@ namespace Server.Utils
             return dict;
         }
 
-        private StringBuilder GetStringCsv(Dictionary<string,string> valuePairs)
+        private StringBuilder GetStringCsv(Dictionary<string, string> valuePairs)
         {
             var sb = new StringBuilder();
             var heads = new StringBuilder();

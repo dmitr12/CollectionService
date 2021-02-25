@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Server.Converters;
 using Server.DI;
 using Server.Interfaces;
 using Server.Managers;
-using Server.Models.Quartz;
+using Server.Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
