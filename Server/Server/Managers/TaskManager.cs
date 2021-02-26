@@ -97,7 +97,7 @@ namespace Server.Managers
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
                 return new StatusCodeResult(500);
             }
         }
@@ -127,7 +127,7 @@ namespace Server.Managers
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
                 return new StatusCodeResult(500);
             }
         }
@@ -175,7 +175,7 @@ namespace Server.Managers
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
             }
         }
     }

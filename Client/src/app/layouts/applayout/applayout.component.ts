@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/services/authentication.service';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {AuthenticationService} from 'src/app/services/authentication.service';
 
 @Component({
   selector: 'app-applayout',
@@ -9,12 +9,13 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 })
 export class ApplayoutComponent implements OnInit {
 
-  constructor(public authenticationService: AuthenticationService) { }
+  constructor(public authenticationService: AuthenticationService) {
+  }
 
   ngOnInit(): void {
   }
 
-  logout(){
+  logout() {
     this.authenticationService.logout();
   }
 }

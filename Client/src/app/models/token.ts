@@ -1,6 +1,6 @@
 
 export class TokenMessage{
-    token: string = '';
+    token = '';
 }
 
 export class Token{

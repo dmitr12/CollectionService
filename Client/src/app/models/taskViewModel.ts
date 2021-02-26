@@ -1,5 +1,5 @@
-import {StringLiteralLike} from "typescript";
-import {Api} from "./api";
+import {StringLiteralLike} from 'typescript';
+import {Api} from './api';
 
 export class TaskViewModel {
 

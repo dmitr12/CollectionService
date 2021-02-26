@@ -31,10 +31,12 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/admin']);
       }
     }, error => {
-      if (error.status == 401)
-        alert("Неверный логин или пароль");
-      else
-        alert("Возникла ошибка, статусный код " + error.status)
+      if (error.status == 401) {
+        alert('Неверный логин или пароль');
+      }
+      else {
+        alert('Возникла ошибка, статусный код ' + error.status);
+      }
     });
   }
 }

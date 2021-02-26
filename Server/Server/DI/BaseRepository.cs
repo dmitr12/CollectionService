@@ -36,7 +36,7 @@ namespace Server.DI
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
             }
             finally
             {
@@ -58,7 +58,7 @@ namespace Server.DI
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
             }
             finally
             {
@@ -82,7 +82,7 @@ namespace Server.DI
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
                 return null;
             }
             finally
@@ -105,7 +105,7 @@ namespace Server.DI
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
             }
             finally
             {
@@ -129,7 +129,7 @@ namespace Server.DI
             }
             catch(Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
                 return null;
             }
             finally

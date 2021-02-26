@@ -39,7 +39,7 @@ namespace Server.Quartz
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
             }
         }
 

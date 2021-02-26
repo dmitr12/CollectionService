@@ -5,7 +5,7 @@ import {Api} from 'src/app/models/api';
 import {TaskViewModel} from 'src/app/models/taskViewModel';
 import {TaskService} from 'src/app/services/task.service';
 import {DatePipe} from '@angular/common';
-import {CronGenComponent, CronOptions} from "ngx-cron-editor";
+import {CronGenComponent, CronOptions} from 'ngx-cron-editor';
 
 @Component({
   selector: 'app-add-task',
@@ -62,8 +62,8 @@ export class AddTaskComponent implements OnInit {
       alert(error.message);
     });
 
-    this.formAdd.controls['apiId'].valueChanges.subscribe(value => {
-      this.formAdd.controls['filterText'].setValue('');
+    this.formAdd.controls.apiId.valueChanges.subscribe(value => {
+      this.formAdd.controls.filterText.setValue('');
     });
   }
 

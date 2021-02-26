@@ -26,25 +26,23 @@ export class TasksComponent implements OnInit {
 
   add() {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = "40%";
     this.dialogSource = this.dialog.open(AddTaskComponent, dialogConfig);
     this.dialogSource.afterClosed().subscribe((result: boolean) => {
       if (result != false) {
-        this.reload()
+        this.reload();
       }
-    })
+    });
   }
 
   editTask(idTask: number) {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = "40%";
     dialogConfig.data = idTask;
     this.dialogSource = this.dialog.open(UpdateTaskComponent, dialogConfig);
     this.dialogSource.afterClosed().subscribe((result: boolean) => {
       if (result != false) {
-        this.reload()
+        this.reload();
       }
-    })
+    });
   }
 
   ngOnInit(): void {
@@ -56,18 +54,17 @@ export class TasksComponent implements OnInit {
       this.tasks = res;
     }, error => {
       alert('Статусный код ' + error.status);
-    })
+    });
   }
 
   deleteTask(idTask: number) {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = "40%";
     dialogConfig.data = idTask;
     this.dialogSource = this.dialog.open(DeleteTaskComponent, dialogConfig);
     this.dialogSource.afterClosed().subscribe((result: boolean) => {
       if (result != false) {
-        this.reload()
+        this.reload();
       }
-    })
+    });
   }
 }
